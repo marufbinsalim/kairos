@@ -1,0 +1,120 @@
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import type { RootState } from './store';
+import type {
+  AuthResponse, Device, Project, Environment, Secret, SyncPayload,
+  RegisterDeviceArgs, DeviceResponse, CompleteRegArgs, ApprovalArgs,
+  UpsertSecretArgs, RecoveryPayload, CompleteRecoveryArgs,
+} from '@kairos/types';
+
+export const api = createApi({
+  reducerPath: 'api',
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/api`,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.accessToken;
+      if (token) headers.set('Authorization', `Bearer ${token}`);
+      return headers;
+    },
+  }),
+  tagTypes: ['Device', 'Project', 'Environment', 'Secret'],
+  endpoints: (build) => ({
+    register: build.mutation<AuthResponse, { email: string; password: string }>({
+      query: (body) => ({ url: '/auth/register', method: 'POST', body }),
+    }),
+    login: build.mutation<AuthResponse, { email: string; password: string }>({
+      query: (body) => ({ url: '/auth/login', method: 'POST', body }),
+    }),
+    logout: build.mutation<void, void>({
+      query: () => ({ url: '/auth/logout', method: 'POST' }),
+    }),
+    registerDevice: build.mutation<DeviceResponse, RegisterDeviceArgs>({
+      query: (body) => ({ url: '/devices/register', method: 'POST', body }),
+      invalidatesTags: ['Device'],
+    }),
+    completeRegistration: build.mutation<void, CompleteRegArgs>({
+      query: (body) => ({ url: '/devices/complete-registration', method: 'POST', body }),
+      invalidatesTags: ['Device'],
+    }),
+    listPendingDevices: build.query<Device[], void>({
+      query: () => '/devices/pending',
+      providesTags: ['Device'],
+    }),
+    completeApproval: build.mutation<void, ApprovalArgs>({
+      query: (body) => ({ url: '/devices/complete-approval', method: 'POST', body }),
+      invalidatesTags: ['Device'],
+    }),
+    listDevices: build.query<Device[], void>({
+      query: () => '/devices',
+      providesTags: ['Device'],
+    }),
+    revokeDevice: build.mutation<void, string>({
+      query: (id) => ({ url: `/devices/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['Device'],
+    }),
+    createProject: build.mutation<Project, { name: string }>({
+      query: (body) => ({ url: '/projects', method: 'POST', body }),
+      invalidatesTags: ['Project'],
+    }),
+    listProjects: build.query<Project[], void>({
+      query: () => '/projects',
+      providesTags: ['Project'],
+    }),
+    createEnvironment: build.mutation<Environment, { projectId: string; name: string }>({
+      query: ({ projectId, ...body }) => ({
+        url: `/projects/${projectId}/environments`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Environment'],
+    }),
+    listEnvironments: build.query<Environment[], string>({
+      query: (projectId) => `/projects/${projectId}/environments`,
+      providesTags: ['Environment'],
+    }),
+    listAllEnvironments: build.query<Environment[], void>({
+      query: () => '/environments',
+      providesTags: ['Environment'],
+    }),
+    listSecrets: build.query<Secret[], string>({
+      query: (envId) => `/environments/${envId}/secrets`,
+      providesTags: ['Secret'],
+    }),
+    upsertSecret: build.mutation<void, UpsertSecretArgs>({
+      query: ({ envId, ...body }) => ({
+        url: `/environments/${envId}/secrets`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Secret'],
+    }),
+    deleteSecret: build.mutation<void, { envId: string; key: string }>({
+      query: ({ envId, key }) => ({
+        url: `/environments/${envId}/secrets/${key}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Secret'],
+    }),
+    syncEnvironment: build.query<SyncPayload, { environmentId: string; deviceId: string }>({
+      query: ({ environmentId, deviceId }) =>
+        `/sync/${environmentId}?deviceId=${deviceId}`,
+    }),
+    initiateRecovery: build.mutation<RecoveryPayload, { environmentId: string }>({
+      query: (body) => ({ url: '/recovery/initiate', method: 'POST', body }),
+    }),
+    completeRecovery: build.mutation<void, CompleteRecoveryArgs>({
+      query: (body) => ({ url: '/devices/complete-recovery', method: 'POST', body }),
+    }),
+  }),
+});
+
+export const {
+  useRegisterMutation, useLoginMutation, useLogoutMutation,
+  useRegisterDeviceMutation, useCompleteRegistrationMutation,
+  useListPendingDevicesQuery, useCompleteApprovalMutation,
+  useListDevicesQuery, useRevokeDeviceMutation,
+  useCreateProjectMutation, useListProjectsQuery,
+  useCreateEnvironmentMutation, useListEnvironmentsQuery, useListAllEnvironmentsQuery,
+  useListSecretsQuery, useUpsertSecretMutation, useDeleteSecretMutation,
+  useSyncEnvironmentQuery,
+  useInitiateRecoveryMutation, useCompleteRecoveryMutation,
+} = api;

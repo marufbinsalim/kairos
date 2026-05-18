@@ -1,0 +1,53 @@
+{
+  "name": "@kairos/cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Kairos CLI — E2EE secrets manager",
+  "main": "dist/index.js",
+  "bin": {
+    "kairos": "./bin/run.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "@noble/curves": "^1.4.0",
+    "@noble/hashes": "^1.4.0",
+    "@oclif/core": "^3.26.0",
+    "bip39": "^3.1.0",
+    "chalk": "^4.1.2",
+    "inquirer": "^8.2.6"
+  },
+  "devDependencies": {
+    "@oclif/test": "^3.2.15",
+    "@types/inquirer": "^8.2.12",
+    "@types/node": "^20.12.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "oclif": {
+    "bin": "kairos",
+    "dirname": "kairos",
+    "commands": "./dist/commands",
+    "topicSeparator": " ",
+    "topics": {
+      "auth": {
+        "description": "Authentication commands"
+      },
+      "devices": {
+        "description": "Device management"
+      },
+      "projects": {
+        "description": "Project management"
+      },
+      "environments": {
+        "description": "Environment management"
+      },
+      "secrets": {
+        "description": "Secret management"
+      }
+    }
+  }
+}

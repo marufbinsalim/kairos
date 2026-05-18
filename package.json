@@ -1,0 +1,16 @@
+{
+  "name": "kairos",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev:api": "pnpm --filter @kairos/api dev",
+    "dev:web": "pnpm --filter @kairos/web dev",
+    "build:api": "pnpm --filter @kairos/api build",
+    "build:web": "pnpm --filter @kairos/web build",
+    "db:migrate": "pnpm --filter @kairos/db migrate:run",
+    "db:generate": "pnpm --filter @kairos/db migrate:generate"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

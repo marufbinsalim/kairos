@@ -1,0 +1,101 @@
+'use client';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectAuth, clearAuth } from '@/lib/store/authSlice';
+import { clearCrypto } from '@/lib/store/cryptoSlice';
+import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
+
+const NAV = [
+  { href: '/dashboard', label: 'Projects', icon: (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+    </svg>
+  )},
+  { href: '/devices', label: 'Devices', icon: (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3" />
+    </svg>
+  )},
+];
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const { accessToken, email } = useSelector(selectAuth);
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!accessToken) router.push('/login');
+  }, [accessToken, router]);
+
+  if (!accessToken) return null;
+
+  function handleLogout() {
+    sessionStorage.clear();
+    dispatch(clearAuth());
+    dispatch(clearCrypto());
+    router.push('/login');
+  }
+
+  return (
+    <div className="flex h-screen bg-gray-950 overflow-hidden">
+      {/* Sidebar */}
+      <aside className="w-[220px] flex-shrink-0 flex flex-col bg-gray-950 border-r border-gray-800/60">
+        {/* Brand */}
+        <div className="px-5 h-14 flex items-center border-b border-gray-800/60">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
+              <span className="text-indigo-400 text-sm font-bold tracking-tight">K</span>
+            </div>
+            <span className="font-semibold text-white text-sm tracking-tight">kairos</span>
+          </div>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 px-3 py-3 space-y-0.5">
+          {NAV.map((item) => {
+            const active = pathname === item.href || (item.href !== '/dashboard' && pathname?.startsWith(item.href));
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  active
+                    ? 'bg-indigo-500/10 text-indigo-300 ring-1 ring-indigo-500/20'
+                    : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/60'
+                }`}
+              >
+                <span className={active ? 'text-indigo-400' : 'text-gray-500'}>{item.icon}</span>
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* User */}
+        <div className="px-3 py-3 border-t border-gray-800/60 space-y-0.5">
+          {email && (
+            <div className="px-3 py-1.5">
+              <p className="text-xs text-gray-500 truncate">{email}</p>
+            </div>
+          )}
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-gray-200 hover:bg-gray-800/60 transition-colors"
+          >
+            <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+            </svg>
+            Sign out
+          </button>
+        </div>
+      </aside>
+
+      {/* Main */}
+      <main className="flex-1 overflow-y-auto min-h-0">
+        {children}
+      </main>
+    </div>
+  );
+}
