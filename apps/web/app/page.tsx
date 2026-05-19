@@ -67,12 +67,19 @@ const updateSteps = {
   'Windows (CMD)': `curl -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "%USERPROFILE%\\.kairos-cli" --strip-components=1 --exclude=kairos/node_modules/.bin\ndel kairos.tar.gz`,
 };
 
+const removeSteps = {
+  'Linux / macOS': `rm -rf ~/.kairos-cli ~/.config/kairos\n# Remove the PATH line from ~/.bashrc or ~/.zshrc:\n# Delete the line: export PATH="$HOME/.kairos-cli/bin:$PATH"`,
+  'Windows (PowerShell)': `Remove-Item -Recurse -Force "$env:USERPROFILE\\.kairos-cli"\nRemove-Item -Recurse -Force "$env:APPDATA\\kairos"\n$cur = [Environment]::GetEnvironmentVariable("PATH","User")\n$clean = ($cur -split ";") | Where-Object { $_ -notlike "*\\.kairos-cli*" } | Join-String -Separator ";"\n[Environment]::SetEnvironmentVariable("PATH",$clean,"User")`,
+  'Windows (CMD)': `rmdir /s /q "%USERPROFILE%\\.kairos-cli"\nrmdir /s /q "%APPDATA%\\kairos"`,
+};
+
 export default function LandingPage() {
   const [platform, setPlatform] = useState<'linux' | 'mac' | 'windows'>('linux');
   const [linuxArch, setLinuxArch] = useState<'x64' | 'arm64'>('x64');
   const [macArch, setMacArch] = useState<'arm64' | 'x64'>('arm64');
   const [winShell, setWinShell] = useState<'ps' | 'cmd'>('cmd');
   const [updatePlatform, setUpdatePlatform] = useState<keyof typeof updateSteps>('Linux / macOS');
+  const [removePlatform, setRemovePlatform] = useState<keyof typeof removeSteps>('Linux / macOS');
 
   const steps =
     platform === 'linux' ? linuxSteps(linuxArch) :
@@ -239,6 +246,27 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* Remove */}
+        <section className="pb-24">
+          <h2 className="text-2xl font-bold text-white mb-2">Uninstall</h2>
+          <p className="text-gray-400 mb-8">Removes the binary, config, and PATH entry from your machine.</p>
+
+          <div className="flex gap-2 mb-4 flex-wrap">
+            {(Object.keys(removeSteps) as Array<keyof typeof removeSteps>).map((k) => (
+              <button key={k} onClick={() => setRemovePlatform(k)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${removePlatform === k ? 'bg-gray-700 text-white border border-gray-600' : 'bg-gray-800 text-gray-400 hover:text-white'}`}>
+                {k}
+              </button>
+            ))}
+          </div>
+
+          <CodeBlock title={removePlatform} code={removeSteps[removePlatform]} />
+
+          {removePlatform === 'Windows (CMD)' && (
+            <p className="text-xs text-gray-500 mt-3">For CMD, remove the PATH entry manually: open System Properties → Environment Variables → edit Path under your user and delete the kairos entry.</p>
+          )}
         </section>
 
         {/* CTA */}
