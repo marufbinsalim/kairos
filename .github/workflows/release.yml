@@ -32,13 +32,14 @@ jobs:
       - name: Build CLI
         run: pnpm --filter @kairos/cli build
 
-      - name: Generate npm shrinkwrap for oclif
-        run: cd apps/cli && npm install --package-lock-only --ignore-scripts --legacy-peer-deps && npm shrinkwrap --ignore-scripts
+      - name: Replace pnpm node_modules with flat npm install for oclif
+        run: |
+          cd apps/cli
+          rm -rf node_modules
+          npm install --legacy-peer-deps
 
       - name: Pack tarballs
-        run: pnpm --filter @kairos/cli exec oclif pack tarballs --targets linux-x64,linux-arm64,darwin-x64,darwin-arm64,win32-x64
-        env:
-          OCLIF_PACK_NODE_VERSION: '20.14.0'
+        run: cd apps/cli && ./node_modules/.bin/oclif pack tarballs --targets linux-x64,linux-arm64,darwin-x64,darwin-arm64,win32-x64
 
       - name: Rename tarballs (strip version)
         run: |
