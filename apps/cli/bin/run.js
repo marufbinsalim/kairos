@@ -34,15 +34,15 @@ function showStatus() {
 
   const loginLine = (auth && auth.accessToken)
     ? chalk.green('●') + '  ' + chalk.dim('logged in as') + '   ' + chalk.cyan(auth.email ?? auth.userId)
-    : chalk.yellow('●') + '  ' + chalk.dim('logged in as') + '   ' + chalk.yellow('not logged in') + chalk.dim(' — run ') + chalk.cyan('kairos auth login');
+    : chalk.yellow('●') + '  ' + chalk.dim('logged in as') + '   ' + chalk.yellow('not logged in') + chalk.dim(' — run ') + chalk.cyan('kairos login');
 
   const envLine = config.defaultEnvName
     ? chalk.green('●') + '  ' + chalk.dim('environment') + '    ' + chalk.bold(config.defaultProjectName ?? '') + ' ' + chalk.dim('›') + ' ' + chalk.bold.green(config.defaultEnvName)
     : chalk.dim('○') + '  ' + chalk.dim('environment') + '    ' + chalk.dim('none — run ') + chalk.cyan('kairos switch');
 
   const deviceLine = config.deviceId
-    ? chalk.green('●') + '  ' + chalk.dim('device') + '         ' + chalk.dim(config.deviceId.slice(0, 8) + '…')
-    : chalk.dim('○') + '  ' + chalk.dim('device') + '         ' + chalk.dim('not registered — run ') + chalk.cyan('kairos devices register');
+    ? chalk.green('●') + '  ' + chalk.dim('device') + '         ' + chalk.cyan(config.deviceName ?? config.deviceId.slice(0, 8) + '…')
+    : chalk.dim('○') + '  ' + chalk.dim('device') + '         ' + chalk.dim('not registered — run ') + chalk.cyan('kairos switch');
 
   console.log('  ' + loginLine);
   console.log('  ' + envLine);
@@ -56,20 +56,23 @@ function showStatus() {
   console.log();
 
   const cmds = [
-    ['auth login / logout',       'Sign in or out'],
-    ['switch',                    'Switch active project / environment'],
-    ['secrets list',              'Decrypt and display secrets for active env'],
-    ['secrets list -g',           'Write secrets to .env in current directory'],
-    ['secrets -g',                'Shorthand for secrets list -g'],
-    ['secrets set -k KEY -v VAL', 'Add or update a secret'],
-    ['secrets delete -k KEY',     'Delete a secret'],
-    ['devices register',          'Register device and request env access'],
-    ['devices list',              'Show all trusted devices'],
-    ['environments list',         'List all environments'],
+    ['login',                      'Sign in to your account'],
+    ['logout',                     'Sign out'],
+    ['switch',                     'Switch active project / environment'],
+    ['',                           chalk.dim('  (registers device if not yet approved)')],
+    ['secrets',                    'Decrypt and display secrets'],
+    ['secrets -g',                 'Write secrets to .env in current directory'],
+    ['secrets -g FILENAME',        'Write secrets to FILENAME'],
+    ['environments list',          'List all environments'],
+    ['name DEVICE_NAME',           'Set a name for this device'],
   ];
 
   for (const [cmd, desc] of cmds) {
-    console.log('    ' + chalk.cyan(cmd.padEnd(30)) + chalk.dim(desc));
+    if (!cmd) {
+      console.log('    ' + desc);
+    } else {
+      console.log('    ' + chalk.cyan(cmd.padEnd(30)) + chalk.dim(desc));
+    }
   }
 
   console.log();

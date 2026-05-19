@@ -13,6 +13,9 @@ function ensureDir() {
 interface KairosConfig {
   apiUrl: string;
   deviceId?: string;
+  deviceIds?: string[];
+  deviceEnvMap?: Record<string, string>;
+  deviceName?: string;
   defaultEnvironmentId?: string;
   defaultProjectId?: string;
   defaultProjectName?: string;
@@ -26,7 +29,7 @@ interface AuthData {
 }
 
 export function loadConfig(): KairosConfig {
-  if (!existsSync(CONFIG_PATH)) return { apiUrl: 'https://api.kairos.your-domain.com' };
+  if (!existsSync(CONFIG_PATH)) return { apiUrl: 'https://concave-pronto-earthlike.ngrok-free.dev' };
   return JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
 }
 
