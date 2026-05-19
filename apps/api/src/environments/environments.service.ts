@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Environment, Project } from '@kairos/db';
+import { Environment, Project, Secret, WrappedDEK } from '@kairos/db';
 import { CreateEnvironmentDto } from './dto/create-environment.dto';
 
 @Injectable()
@@ -11,6 +11,10 @@ export class EnvironmentsService {
     private readonly envRepo: Repository<Environment>,
     @InjectRepository(Project)
     private readonly projectRepo: Repository<Project>,
+    @InjectRepository(Secret)
+    private readonly secretRepo: Repository<Secret>,
+    @InjectRepository(WrappedDEK)
+    private readonly wrappedDEKRepo: Repository<WrappedDEK>,
   ) {}
 
   async create(userId: string, projectId: string, dto: CreateEnvironmentDto) {
@@ -30,6 +34,17 @@ export class EnvironmentsService {
     const env = await this.envRepo.findOne({ where: { id: envId } });
     if (!env) throw new NotFoundException('Environment not found');
     return env;
+  }
+
+  async remove(userId: string, projectId: string, envId: string) {
+    const project = await this.projectRepo.findOne({ where: { id: projectId, userId } });
+    if (!project) throw new NotFoundException('Project not found');
+    const env = await this.envRepo.findOne({ where: { id: envId, projectId } });
+    if (!env) throw new NotFoundException('Environment not found');
+    await this.wrappedDEKRepo.delete({ environmentId: envId });
+    await this.secretRepo.delete({ environmentId: envId });
+    await this.envRepo.remove(env);
+    return { success: true };
   }
 
   async listAll(userId: string) {

@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { EnvironmentsService } from './environments.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateEnvironmentDto } from './dto/create-environment.dto';
@@ -20,6 +20,15 @@ export class EnvironmentsController {
   @Get()
   list(@Request() req: any, @Param('projectId') projectId: string) {
     return this.environmentsService.list(req.user.id, projectId);
+  }
+
+  @Delete(':envId')
+  remove(
+    @Request() req: any,
+    @Param('projectId') projectId: string,
+    @Param('envId') envId: string,
+  ) {
+    return this.environmentsService.remove(req.user.id, projectId, envId);
   }
 }
 

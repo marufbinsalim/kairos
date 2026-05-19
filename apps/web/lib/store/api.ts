@@ -60,11 +60,22 @@ export const api = createApi({
       query: () => '/projects',
       providesTags: ['Project'],
     }),
+    deleteProject: build.mutation<void, string>({
+      query: (id) => ({ url: `/projects/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['Project', 'Environment'],
+    }),
     createEnvironment: build.mutation<Environment, { projectId: string; name: string }>({
       query: ({ projectId, ...body }) => ({
         url: `/projects/${projectId}/environments`,
         method: 'POST',
         body,
+      }),
+      invalidatesTags: ['Environment'],
+    }),
+    deleteEnvironment: build.mutation<void, { projectId: string; envId: string }>({
+      query: ({ projectId, envId }) => ({
+        url: `/projects/${projectId}/environments/${envId}`,
+        method: 'DELETE',
       }),
       invalidatesTags: ['Environment'],
     }),
@@ -107,8 +118,8 @@ export const {
   useRegisterDeviceMutation, useCompleteRegistrationMutation,
   useListPendingDevicesQuery, useCompleteApprovalMutation,
   useListDevicesQuery, useRevokeDeviceMutation,
-  useCreateProjectMutation, useListProjectsQuery,
-  useCreateEnvironmentMutation, useListEnvironmentsQuery, useListAllEnvironmentsQuery,
+  useCreateProjectMutation, useListProjectsQuery, useDeleteProjectMutation,
+  useCreateEnvironmentMutation, useListEnvironmentsQuery, useListAllEnvironmentsQuery, useDeleteEnvironmentMutation,
   useListSecretsQuery, useUpsertSecretMutation, useDeleteSecretMutation,
   useSyncEnvironmentQuery,
 } = api;
