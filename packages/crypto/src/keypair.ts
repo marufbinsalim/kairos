@@ -1,7 +1,7 @@
 import { x25519 } from '@noble/curves/ed25519';
 
 export function generateKeypair(): { privateKey: Uint8Array; publicKey: Uint8Array } {
-  const privateKey = x25519.utils.randomPrivateKey();
+  const privateKey = x25519.utils.randomSecretKey();
   const publicKey = x25519.getPublicKey(privateKey);
   return { privateKey, publicKey };
 }
