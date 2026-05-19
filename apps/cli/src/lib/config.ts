@@ -29,7 +29,7 @@ interface AuthData {
 }
 
 export function loadConfig(): KairosConfig {
-  if (!existsSync(CONFIG_PATH)) return { apiUrl: 'https://concave-pronto-earthlike.ngrok-free.dev' };
+  if (!existsSync(CONFIG_PATH)) return { apiUrl: 'https://kairos-api-chi.vercel.app' };
   return JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
 }
 
