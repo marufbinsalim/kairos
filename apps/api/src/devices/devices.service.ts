@@ -121,8 +121,8 @@ export class DevicesService {
   async revokeDevice(userId: string, deviceId: string) {
     const device = await this.deviceRepo.findOne({ where: { id: deviceId, userId } });
     if (!device) throw new NotFoundException('Device not found');
-    device.status = DeviceStatus.revoked;
-    await this.deviceRepo.save(device);
+    await this.wrappedDEKRepo.delete({ deviceId });
+    await this.deviceRepo.remove(device);
     return { success: true };
   }
 
