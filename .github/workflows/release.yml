@@ -1,0 +1,58 @@
+name: Release CLI
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build @kairos/db
+        run: pnpm --filter @kairos/db build
+
+      - name: Build CLI
+        run: pnpm --filter @kairos/cli build
+
+      - name: Pack tarballs
+        run: pnpm --filter @kairos/cli exec oclif pack tarballs --targets linux-x64,linux-arm64,darwin-x64,darwin-arm64,win32-x64
+        env:
+          OCLIF_PACK_NODE_VERSION: '20.14.0'
+
+      - name: Rename tarballs (strip version)
+        run: |
+          cd apps/cli/dist
+          for f in kairos-v*-linux-x64.tar.gz;    do cp "$f" kairos-linux-x64.tar.gz;    done
+          for f in kairos-v*-linux-arm64.tar.gz;  do cp "$f" kairos-linux-arm64.tar.gz;  done
+          for f in kairos-v*-darwin-x64.tar.gz;   do cp "$f" kairos-darwin-x64.tar.gz;   done
+          for f in kairos-v*-darwin-arm64.tar.gz; do cp "$f" kairos-darwin-arm64.tar.gz; done
+          for f in kairos-v*-win32-x64.tar.gz;    do cp "$f" kairos-win32-x64.tar.gz;    done
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            apps/cli/dist/kairos-linux-x64.tar.gz
+            apps/cli/dist/kairos-linux-arm64.tar.gz
+            apps/cli/dist/kairos-darwin-x64.tar.gz
+            apps/cli/dist/kairos-darwin-arm64.tar.gz
+            apps/cli/dist/kairos-win32-x64.tar.gz
+          generate_release_notes: true

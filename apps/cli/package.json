@@ -24,6 +24,7 @@
     "@oclif/test": "^3.2.15",
     "@types/inquirer": "^8.2.12",
     "@types/node": "^20.12.7",
+    "oclif": "^4.14.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   },
@@ -32,6 +33,9 @@
     "dirname": "kairos",
     "commands": "./dist/commands",
     "topicSeparator": " ",
+    "node": {
+      "version": "20.14.0"
+    },
     "topics": {
       "auth": {
         "description": "Authentication commands"
