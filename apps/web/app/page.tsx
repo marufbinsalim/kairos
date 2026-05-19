@@ -57,7 +57,7 @@ const winPsSteps = [
 
 const winCmdSteps = [
   { n: 1, title: 'Download & extract', code: `mkdir "%USERPROFILE%\\.kairos-cli"\ncurl -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "%USERPROFILE%\\.kairos-cli" --strip-components=1 --exclude=kairos/node_modules/.bin\ndel kairos.tar.gz` },
-  { n: 2, title: 'Add to PATH (run once)', code: `setx PATH "%PATH%;%USERPROFILE%\\.kairos-cli\\bin"` },
+  { n: 2, title: 'Add to PATH (run once)', code: `setx PATH "%USERPROFILE%\\.kairos-cli\\bin"` },
   { n: 3, title: 'Close & reopen terminal, then verify', code: 'kairos' },
 ];
 
