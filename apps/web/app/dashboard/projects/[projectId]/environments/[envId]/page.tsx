@@ -5,128 +5,16 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   useListSecretsQuery, useUpsertSecretMutation, useDeleteSecretMutation,
-  useInitiateRecoveryMutation, useCompleteRecoveryMutation,
   useListEnvironmentsQuery,
 } from '@/lib/store/api';
 import { selectCrypto, setDEK } from '@/lib/store/cryptoSlice';
 import { selectAuth } from '@/lib/store/authSlice';
 import { encryptSecret, decryptSecret } from '@/lib/crypto/secrets';
-import { selfUnwrapDEK, selfWrapDEK } from '@/lib/crypto/dek';
-import { mnemonicToRecoveryKey, unwrapDEKWithRecoveryKey } from '@/lib/crypto/recovery';
+import { selfUnwrapDEK } from '@/lib/crypto/dek';
 import { AppShell } from '@/components/AppShell';
 import type { Secret } from '@kairos/types';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
-
-function RecoveryModal({
-  envId,
-  deviceId,
-  privateKey,
-  onClose,
-  onSuccess,
-}: {
-  envId: string;
-  deviceId: string;
-  privateKey: Uint8Array;
-  onClose: () => void;
-  onSuccess: (dek: Uint8Array) => void;
-}) {
-  const [mnemonic, setMnemonic] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [initiateRecovery] = useInitiateRecoveryMutation();
-  const [completeRecovery] = useCompleteRecoveryMutation();
-
-  async function handleRecover(e: React.FormEvent) {
-    e.preventDefault();
-    const phrase = mnemonic.trim().replace(/\s+/g, ' ');
-    if (!phrase) return;
-    setLoading(true);
-    setError('');
-    try {
-      const { wrappedDEKRecovery } = await initiateRecovery({ environmentId: envId }).unwrap();
-      const recoveryKey = mnemonicToRecoveryKey(phrase);
-      const dek = await unwrapDEKWithRecoveryKey(recoveryKey, wrappedDEKRecovery);
-      const newWrappedDEK = await selfWrapDEK(privateKey, dek);
-      await completeRecovery({ deviceId, environmentId: envId, wrappedDEK: newWrappedDEK }).unwrap();
-      onSuccess(dek);
-    } catch {
-      setError('Recovery failed. Make sure your mnemonic phrase is correct.');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      onClick={(e) => { if (!loading && e.target === e.currentTarget) onClose(); }}
-    >
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-lg shadow-2xl">
-        <div className="flex items-start gap-3 mb-5">
-          <div className="w-9 h-9 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center flex-shrink-0 mt-0.5 text-yellow-400">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-            </svg>
-          </div>
-          <div>
-            <h2 className="text-base font-semibold text-white">Recover Encryption Key</h2>
-            <p className="text-gray-400 text-sm mt-0.5">Enter your 24-word recovery phrase to restore access to this environment.</p>
-          </div>
-        </div>
-
-        <form onSubmit={handleRecover} className="space-y-4">
-          <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Recovery phrase</label>
-            <textarea
-              autoFocus
-              value={mnemonic}
-              onChange={(e) => setMnemonic(e.target.value)}
-              placeholder="Enter your 24-word recovery phrase, separated by spaces…"
-              rows={4}
-              className="w-full bg-gray-800 border border-gray-700 focus:border-indigo-500 rounded-lg px-3.5 py-2.5 text-white placeholder-gray-600 text-sm outline-none transition-colors resize-none font-mono"
-            />
-          </div>
-
-          {error && (
-            <div className="flex items-center gap-2 bg-red-950/30 border border-red-800/40 rounded-lg px-3 py-2">
-              <svg className="w-4 h-4 text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
-              </svg>
-              <p className="text-red-400 text-sm">{error}</p>
-            </div>
-          )}
-
-          <div className="flex gap-3 pt-1">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={loading}
-              className="flex-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 text-gray-300 py-2.5 rounded-lg text-sm font-medium transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading || !mnemonic.trim()}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2.5 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  Recovering…
-                </>
-              ) : 'Recover access'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 function SecretRow({
   secret,
@@ -232,7 +120,6 @@ export default function SecretsPage({ params }: { params: { projectId: string; e
   const [newKey, setNewKey] = useState('');
   const [newValue, setNewValue] = useState('');
   const [syncing, setSyncing] = useState(false);
-  const [showRecovery, setShowRecovery] = useState(false);
 
   const env = environments?.find((e) => e.id === params.envId);
 
@@ -291,17 +178,6 @@ export default function SecretsPage({ params }: { params: { projectId: string; e
             <h1 className="text-2xl font-bold text-white tracking-tight">Secrets</h1>
             <p className="text-gray-500 text-sm mt-0.5">End-to-end encrypted key-value pairs</p>
           </div>
-          {!dekReady && !syncing && privateKey && (
-            <button
-              onClick={() => setShowRecovery(true)}
-              className="flex items-center gap-2 border border-yellow-600/40 text-yellow-400 hover:bg-yellow-950/30 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-              </svg>
-              Recover access
-            </button>
-          )}
         </div>
 
         {/* Status banners */}
@@ -332,7 +208,7 @@ export default function SecretsPage({ params }: { params: { projectId: string; e
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
             </svg>
             <p className="text-orange-400/80 text-sm">
-              Encryption key unavailable for this environment. Use <strong>Recover access</strong> with your recovery phrase.
+              No encryption key found for this environment on your device. Request access from another active device.
             </p>
           </div>
         )}
@@ -406,19 +282,6 @@ export default function SecretsPage({ params }: { params: { projectId: string; e
           </>
         )}
       </div>
-
-      {showRecovery && privateKey && deviceId && (
-        <RecoveryModal
-          envId={params.envId}
-          deviceId={deviceId}
-          privateKey={privateKey}
-          onClose={() => setShowRecovery(false)}
-          onSuccess={(recoveredDek) => {
-            dispatch(setDEK(recoveredDek));
-            setShowRecovery(false);
-          }}
-        />
-      )}
     </AppShell>
   );
 }

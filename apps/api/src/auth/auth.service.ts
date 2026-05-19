@@ -20,7 +20,12 @@ export class AuthService {
     if (existing) throw new ConflictException('Email already registered');
 
     const password = await argon2.hash(dto.password);
-    const user = this.userRepo.create({ email: dto.email, password });
+    const user = this.userRepo.create({
+      email: dto.email,
+      password,
+      encryptedPrivateKey: dto.encryptedPrivateKey ?? null,
+      publicKey: dto.publicKey ?? null,
+    });
     await this.userRepo.save(user);
 
     return this.issueToken(user);
@@ -39,6 +44,10 @@ export class AuthService {
   private issueToken(user: User) {
     const payload = { sub: user.id, email: user.email };
     const accessToken = this.jwtService.sign(payload);
-    return { accessToken, userId: user.id };
+    return {
+      accessToken,
+      userId: user.id,
+      encryptedPrivateKey: user.encryptedPrivateKey ?? undefined,
+    };
   }
 }

@@ -35,7 +35,7 @@ const authSlice = createSlice({
       state.accessToken = null;
       state.userId = null;
       state.email = null;
-      ['kairos_token', 'kairos_userId', 'kairos_email', 'kairos_deviceId', 'kairos_pw'].forEach(
+      ['kairos_token', 'kairos_userId', 'kairos_email', 'kairos_deviceId', 'kairos_pw', 'kairos_privkey'].forEach(
         (k) => sessionStorage.removeItem(k),
       );
     },

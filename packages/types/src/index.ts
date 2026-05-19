@@ -26,6 +26,7 @@ export interface Device {
   createdAt: string;
   requestedEnvironmentIds?: string[];
   requestedEnvInfo?: Array<{ id: string; name: string }>;
+  environments?: Array<{ id: string; name: string; projectName: string }>;
 }
 
 export interface Project {
@@ -65,6 +66,7 @@ export interface Secret {
 export interface AuthResponse {
   accessToken: string;
   userId: string;
+  encryptedPrivateKey?: string;
 }
 
 export interface RegisterDeviceArgs {
@@ -83,7 +85,6 @@ export interface CompleteRegArgs {
   deviceId: string;
   environmentId: string;
   wrappedDEK: string;
-  wrappedDEKRecovery: string;
 }
 
 export interface ApprovalArgs {
@@ -108,12 +109,3 @@ export interface UpsertSecretArgs {
   iv: string;
 }
 
-export interface RecoveryPayload {
-  wrappedDEKRecovery: string;
-}
-
-export interface CompleteRecoveryArgs {
-  deviceId: string;
-  environmentId: string;
-  wrappedDEK: string;
-}

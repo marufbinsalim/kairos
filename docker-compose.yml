@@ -22,7 +22,7 @@ services:
       dockerfile: apps/api/Dockerfile
     restart: unless-stopped
     ports:
-      - "3002:3001"
+      - "5005:5005"
     env_file:
       - apps/api/.env
     depends_on:

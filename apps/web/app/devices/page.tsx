@@ -271,9 +271,18 @@ export default function DevicesPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-gray-500 text-xs">
+                    <p className="text-gray-500 text-xs mb-1">
                       {d.type} · Added {new Date(d.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </p>
+                    {d.environments && d.environments.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {d.environments.map((e) => (
+                          <span key={e.id} className="text-xs bg-gray-800 border border-gray-700 text-gray-400 px-2 py-0.5 rounded font-mono">
+                            {e.projectName ? `${e.projectName} › ` : ''}{e.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   {d.id !== deviceId && (
                     <button

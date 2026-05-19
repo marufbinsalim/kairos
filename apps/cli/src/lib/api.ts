@@ -8,6 +8,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     ...(options.headers as Record<string, string> ?? {}),
   };
   if (auth?.accessToken) headers['Authorization'] = `Bearer ${auth.accessToken}`;
+  headers['ngrok-skip-browser-warning'] = 'true';
 
   const res = await fetch(`${config.apiUrl}/api${path}`, { ...options, headers });
   if (!res.ok) {

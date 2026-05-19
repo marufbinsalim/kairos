@@ -9,7 +9,4 @@ export class CompleteRegistrationDto {
 
   @IsString()
   wrappedDEK: string;
-
-  @IsString()
-  wrappedDEKRecovery: string;
 }

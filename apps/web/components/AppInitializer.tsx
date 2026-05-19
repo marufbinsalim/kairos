@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAuth } from '@/lib/store/authSlice';
 import { selectCrypto, setKeypair } from '@/lib/store/cryptoSlice';
-import { loadPrivateKey } from '@/lib/storage/indexeddb';
+import { base64ToBytes } from '@/lib/crypto/keypair';
 import { x25519 } from '@noble/curves/ed25519';
 
 export function AppInitializer() {
@@ -13,14 +13,11 @@ export function AppInitializer() {
 
   useEffect(() => {
     if (!accessToken || privateKey) return;
-    const password = sessionStorage.getItem('kairos_pw');
-    if (!password) return;
-
-    loadPrivateKey(password).then((key) => {
-      if (!key) return;
-      const publicKey = x25519.getPublicKey(key);
-      dispatch(setKeypair({ privateKey: key, publicKey }));
-    });
+    const stored = sessionStorage.getItem('kairos_privkey');
+    if (!stored) return;
+    const key = base64ToBytes(stored);
+    const publicKey = x25519.getPublicKey(key);
+    dispatch(setKeypair({ privateKey: key, publicKey }));
   }, [accessToken, privateKey, dispatch]);
 
   return null;

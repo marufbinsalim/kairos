@@ -31,7 +31,7 @@ export class SyncService {
     if (!project) throw new ForbiddenException('Access denied');
 
     const wrappedDEKRecord = await this.wrappedDEKRepo.findOne({
-      where: { environmentId, deviceId, isRecovery: false },
+      where: { environmentId, deviceId },
     });
     if (!wrappedDEKRecord) throw new NotFoundException('No wrapped DEK found for this device');
 

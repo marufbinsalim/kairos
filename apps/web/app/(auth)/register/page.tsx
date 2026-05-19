@@ -5,8 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useRegisterMutation, useRegisterDeviceMutation } from '@/lib/store/api';
 import { setAuth } from '@/lib/store/authSlice';
 import { setKeypair, setDeviceId } from '@/lib/store/cryptoSlice';
-import { generateKeypair, bytesToBase64 } from '@/lib/crypto/keypair';
-import { storePrivateKey } from '@/lib/storage/indexeddb';
+import { generateKeypair, bytesToBase64, encryptPrivateKeyWithPassword } from '@/lib/crypto/keypair';
 import { DeviceType } from '@kairos/types';
 import Link from 'next/link';
 
@@ -25,12 +24,19 @@ export default function RegisterPage() {
     setError('');
     setIsLoading(true);
     try {
-      const auth = await register({ email, password }).unwrap();
-      dispatch(setAuth({ accessToken: auth.accessToken, userId: auth.userId, email }));
-      sessionStorage.setItem('kairos_pw', password);
-
       const { privateKey, publicKey } = generateKeypair();
-      await storePrivateKey(privateKey, password);
+      const encryptedPrivateKey = await encryptPrivateKeyWithPassword(privateKey, password);
+
+      const auth = await register({
+        email,
+        password,
+        encryptedPrivateKey,
+        publicKey: bytesToBase64(publicKey),
+      }).unwrap();
+
+      dispatch(setAuth({ accessToken: auth.accessToken, userId: auth.userId, email }));
+      sessionStorage.setItem('kairos_privkey', bytesToBase64(privateKey));
+
       dispatch(setKeypair({ privateKey, publicKey }));
 
       const device = await registerDevice({
@@ -60,7 +66,7 @@ export default function RegisterPage() {
 
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
           <h1 className="text-xl font-semibold text-white mb-1">Create account</h1>
-          <p className="text-gray-400 text-sm mb-6">Your encryption keys are generated locally and never leave your device.</p>
+          <p className="text-gray-400 text-sm mb-6">Your encryption keys are generated locally and never leave your device unencrypted.</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

@@ -8,8 +8,6 @@ import { ProjectsModule } from './projects/projects.module';
 import { EnvironmentsModule } from './environments/environments.module';
 import { SecretsModule } from './secrets/secrets.module';
 import { SyncModule } from './sync/sync.module';
-import { RecoveryModule } from './recovery/recovery.module';
-
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -25,7 +23,6 @@ import { RecoveryModule } from './recovery/recovery.module';
     EnvironmentsModule,
     SecretsModule,
     SyncModule,
-    RecoveryModule,
   ],
 })
 export class AppModule {}

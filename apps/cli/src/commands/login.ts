@@ -4,7 +4,7 @@ import { api } from '../lib/api';
 import { saveAuth, saveConfig } from '../lib/config';
 import { header, ok } from '../lib/ui';
 
-const API_URL = 'http://localhost:5005';
+const API_URL = 'https://concave-pronto-earthlike.ngrok-free.dev';
 
 function prompt(question: string, hidden = false): Promise<string> {
   return new Promise((resolve) => {

@@ -4,15 +4,16 @@ import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { useLoginMutation } from '@/lib/store/api';
 import { setAuth } from '@/lib/store/authSlice';
-import { setKeypair, setDEK, setDeviceId } from '@/lib/store/cryptoSlice';
-import { loadPrivateKey } from '@/lib/storage/indexeddb';
-import { selfUnwrapDEK } from '@/lib/crypto/dek';
+import { setKeypair, setDeviceId } from '@/lib/store/cryptoSlice';
+import { decryptPrivateKeyWithPassword, bytesToBase64 } from '@/lib/crypto/keypair';
 import { x25519 } from '@noble/curves/ed25519';
 import Link from 'next/link';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 async function apiFetch<T>(path: string, token: string): Promise<T> {
-  const res = await fetch(`${API}/api${path}`, { headers: { Authorization: `Bearer ${token}` } });
+  const res = await fetch(`${API}/api${path}`, {
+    headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
+  });
   if (!res.ok) throw new Error(`${res.status}`);
   return res.json();
 }
@@ -31,31 +32,18 @@ export default function LoginPage() {
     try {
       const result = await login({ email, password }).unwrap();
       dispatch(setAuth({ accessToken: result.accessToken, userId: result.userId, email }));
-      sessionStorage.setItem('kairos_pw', password);
 
-      const privateKey = await loadPrivateKey(password);
-      if (!privateKey) { router.push('/dashboard'); return; }
-      const publicKey = x25519.getPublicKey(privateKey);
-      dispatch(setKeypair({ privateKey, publicKey }));
+      if (result.encryptedPrivateKey) {
+        const privateKey = await decryptPrivateKeyWithPassword(result.encryptedPrivateKey, password);
+        const publicKey = x25519.getPublicKey(privateKey);
+        sessionStorage.setItem('kairos_privkey', bytesToBase64(privateKey));
+        dispatch(setKeypair({ privateKey, publicKey }));
 
-      const devices = await apiFetch<Array<{ id: string; status: string }>>('/devices', result.accessToken);
-      const device = devices.find((d) => d.status === 'active') ?? devices.find((d) => d.status === 'pending');
-      if (!device) { router.push('/dashboard'); return; }
-      dispatch(setDeviceId(device.id));
-
-      if (device.status === 'active') {
-        try {
-          const projects = await apiFetch<Array<{ id: string }>>('/projects', result.accessToken);
-          if (projects.length) {
-            const envs = await apiFetch<Array<{ id: string }>>(`/projects/${projects[0].id}/environments`, result.accessToken);
-            if (envs.length) {
-              const sync = await apiFetch<{ wrappedDEK: string }>(`/sync/${envs[0].id}?deviceId=${device.id}`, result.accessToken);
-              const dek = await selfUnwrapDEK(privateKey, sync.wrappedDEK);
-              dispatch(setDEK(dek));
-            }
-          }
-        } catch { /* no env yet */ }
+        const devices = await apiFetch<Array<{ id: string; status: string }>>('/devices', result.accessToken);
+        const device = devices.find((d) => d.status === 'active') ?? devices.find((d) => d.status === 'pending');
+        if (device) dispatch(setDeviceId(device.id));
       }
+
       router.push('/dashboard');
     } catch {
       setError('Invalid email or password');
@@ -65,7 +53,6 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        {/* Brand */}
         <div className="flex items-center gap-2.5 mb-8">
           <div className="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
             <span className="text-indigo-400 font-bold">K</span>

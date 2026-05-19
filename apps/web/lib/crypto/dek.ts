@@ -7,14 +7,18 @@ export function generateDEK(): Uint8Array {
   return crypto.getRandomValues(new Uint8Array(32));
 }
 
+function toBuffer(data: Uint8Array): ArrayBuffer {
+  return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer;
+}
+
 async function deriveWrapKey(ikm: Uint8Array, salt: Uint8Array, info: string): Promise<CryptoKey> {
-  const derived = hkdf(sha256, ikm, salt, new TextEncoder().encode(info), 32);
-  return crypto.subtle.importKey('raw', derived, { name: 'AES-GCM' }, false, ['wrapKey', 'unwrapKey', 'encrypt', 'decrypt']);
+  const derived = new Uint8Array(hkdf(sha256, ikm, salt, new TextEncoder().encode(info), 32));
+  return crypto.subtle.importKey('raw', toBuffer(derived), { name: 'AES-GCM' }, false, ['wrapKey', 'unwrapKey', 'encrypt', 'decrypt']);
 }
 
 async function aesGcmEncryptBytes(key: CryptoKey, data: Uint8Array): Promise<Uint8Array> {
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
+  const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, toBuffer(data));
   const result = new Uint8Array(12 + encrypted.byteLength);
   result.set(iv, 0);
   result.set(new Uint8Array(encrypted), 12);
@@ -24,7 +28,7 @@ async function aesGcmEncryptBytes(key: CryptoKey, data: Uint8Array): Promise<Uin
 async function aesGcmDecryptBytes(key: CryptoKey, data: Uint8Array): Promise<Uint8Array> {
   const iv = data.slice(0, 12);
   const ciphertext = data.slice(12);
-  const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
+  const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: toBuffer(iv) }, key, toBuffer(ciphertext));
   return new Uint8Array(decrypted);
 }
 

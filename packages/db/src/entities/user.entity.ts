@@ -15,6 +15,12 @@ export class User {
   @Column()
   password: string;
 
+  @Column({ type: 'text', nullable: true })
+  encryptedPrivateKey: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  publicKey: string | null;
+
   @CreateDateColumn()
   createdAt: Date;
 

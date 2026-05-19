@@ -3,7 +3,7 @@ import type { RootState } from './store';
 import type {
   AuthResponse, Device, Project, Environment, Secret, SyncPayload,
   RegisterDeviceArgs, DeviceResponse, CompleteRegArgs, ApprovalArgs,
-  UpsertSecretArgs, RecoveryPayload, CompleteRecoveryArgs,
+  UpsertSecretArgs,
 } from '@kairos/types';
 
 export const api = createApi({
@@ -13,12 +13,13 @@ export const api = createApi({
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.accessToken;
       if (token) headers.set('Authorization', `Bearer ${token}`);
+      headers.set('ngrok-skip-browser-warning', 'true');
       return headers;
     },
   }),
   tagTypes: ['Device', 'Project', 'Environment', 'Secret'],
   endpoints: (build) => ({
-    register: build.mutation<AuthResponse, { email: string; password: string }>({
+    register: build.mutation<AuthResponse, { email: string; password: string; encryptedPrivateKey?: string; publicKey?: string }>({
       query: (body) => ({ url: '/auth/register', method: 'POST', body }),
     }),
     login: build.mutation<AuthResponse, { email: string; password: string }>({
@@ -98,12 +99,6 @@ export const api = createApi({
       query: ({ environmentId, deviceId }) =>
         `/sync/${environmentId}?deviceId=${deviceId}`,
     }),
-    initiateRecovery: build.mutation<RecoveryPayload, { environmentId: string }>({
-      query: (body) => ({ url: '/recovery/initiate', method: 'POST', body }),
-    }),
-    completeRecovery: build.mutation<void, CompleteRecoveryArgs>({
-      query: (body) => ({ url: '/devices/complete-recovery', method: 'POST', body }),
-    }),
   }),
 });
 
@@ -116,5 +111,4 @@ export const {
   useCreateEnvironmentMutation, useListEnvironmentsQuery, useListAllEnvironmentsQuery,
   useListSecretsQuery, useUpsertSecretMutation, useDeleteSecretMutation,
   useSyncEnvironmentQuery,
-  useInitiateRecoveryMutation, useCompleteRecoveryMutation,
 } = api;

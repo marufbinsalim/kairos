@@ -30,9 +30,6 @@ export class WrappedDEK {
   @Column({ type: 'text', nullable: true })
   wrappedByPublicKey: string | null;
 
-  @Column({ default: false })
-  isRecovery: boolean;
-
   @CreateDateColumn()
   createdAt: Date;
 }

@@ -1,13 +1,12 @@
 import {
-  Injectable, NotFoundException, ForbiddenException, BadRequestException,
+  Injectable, NotFoundException, BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Device, DeviceStatus, DeviceType, WrappedDEK, Environment } from '@kairos/db';
+import { Repository, In } from 'typeorm';
+import { Device, DeviceStatus, WrappedDEK, Environment } from '@kairos/db';
 import { RegisterDeviceDto } from './dto/register-device.dto';
 import { CompleteRegistrationDto } from './dto/complete-registration.dto';
 import { CompleteApprovalDto } from './dto/complete-approval.dto';
-import { CompleteRecoveryDto } from './dto/complete-recovery.dto';
 
 @Injectable()
 export class DevicesService {
@@ -41,16 +40,8 @@ export class DevicesService {
       environmentId: dto.environmentId,
       deviceId: device.id,
       wrappedDEK: dto.wrappedDEK,
-      isRecovery: false,
     });
-    const recoveryWdek = this.wrappedDEKRepo.create({
-      environmentId: dto.environmentId,
-      deviceId: null,
-      wrappedDEK: dto.wrappedDEKRecovery,
-      isRecovery: true,
-    });
-
-    await this.wrappedDEKRepo.save([wdek, recoveryWdek]);
+    await this.wrappedDEKRepo.save(wdek);
     device.status = DeviceStatus.active;
     await this.deviceRepo.save(device);
     return { success: true };
@@ -87,7 +78,6 @@ export class DevicesService {
         deviceId: targetDevice.id,
         wrappedDEK: entry.wrappedDEK,
         wrappedByPublicKey: entry.wrappedByPublicKey,
-        isRecovery: false,
       }),
     );
 
@@ -98,10 +88,34 @@ export class DevicesService {
   }
 
   async listDevices(userId: string) {
-    return this.deviceRepo.find({
+    const devices = await this.deviceRepo.find({
       where: { userId, status: DeviceStatus.active },
       select: ['id', 'type', 'label', 'publicKey', 'createdAt', 'status'],
     });
+    if (!devices.length) return [];
+
+    const deviceIds = devices.map((d) => d.id);
+    const wdeks = await this.wrappedDEKRepo.find({ where: { deviceId: In(deviceIds) } });
+    const envIds = [...new Set(wdeks.map((w) => w.environmentId))];
+    const envs = envIds.length
+      ? await this.envRepo.find({ where: { id: In(envIds) }, relations: ['project'] })
+      : [];
+
+    return devices.map((d) => {
+      const myEnvIds = wdeks.filter((w) => w.deviceId === d.id).map((w) => w.environmentId);
+      const environments = envs
+        .filter((e) => myEnvIds.includes(e.id))
+        .map((e) => ({ id: e.id, name: e.name, projectName: (e as any).project?.name ?? '' }));
+      return { ...d, environments };
+    });
+  }
+
+  async updateLabel(userId: string, deviceId: string, label: string) {
+    const device = await this.deviceRepo.findOne({ where: { id: deviceId, userId } });
+    if (!device) throw new NotFoundException('Device not found');
+    device.label = label;
+    await this.deviceRepo.save(device);
+    return { success: true };
   }
 
   async revokeDevice(userId: string, deviceId: string) {
@@ -112,37 +126,11 @@ export class DevicesService {
     return { success: true };
   }
 
-  async completeRecovery(userId: string, dto: CompleteRecoveryDto) {
-    const newDevice = await this.deviceRepo.findOne({ where: { id: dto.deviceId, userId } });
-    if (!newDevice) throw new NotFoundException('Device not found');
-
-    await this.deviceRepo
-      .createQueryBuilder()
-      .update()
-      .set({ status: DeviceStatus.revoked })
-      .where('userId = :userId AND id != :newDeviceId', { userId, newDeviceId: dto.deviceId })
-      .execute();
-
-    const wdek = this.wrappedDEKRepo.create({
-      environmentId: dto.environmentId,
-      deviceId: newDevice.id,
-      wrappedDEK: dto.wrappedDEK,
-      isRecovery: false,
-    });
-    await this.wrappedDEKRepo.save(wdek);
-    newDevice.status = DeviceStatus.active;
-    await this.deviceRepo.save(newDevice);
-    return { success: true };
-  }
-
   async getDeviceEnvironments(userId: string, deviceId: string) {
     const device = await this.deviceRepo.findOne({ where: { id: deviceId, userId, status: DeviceStatus.active } });
     if (!device) throw new NotFoundException('Device not found');
 
-    const wdeks = await this.wrappedDEKRepo.find({
-      where: { deviceId, isRecovery: false },
-    });
-
+    const wdeks = await this.wrappedDEKRepo.find({ where: { deviceId } });
     const envIds = wdeks.map((w) => w.environmentId);
     if (!envIds.length) return [];
 
