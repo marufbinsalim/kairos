@@ -1,0 +1,21 @@
+name: Test Windows CLI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - name: Download and extract
+        run: |
+          $dest = "$env:USERPROFILE\.kairos-cli"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          curl.exe -L https://github.com/marufbinsalim/kairos/releases/latest/download/kairos-win32-x64.tar.gz -o kairos.tar.gz
+          tar -xzf kairos.tar.gz -C $dest --strip-components=1
+
+      - name: Add to PATH
+        run: echo "$env:USERPROFILE\.kairos-cli\bin" >> $env:GITHUB_PATH
+
+      - name: Run kairos
+        run: kairos
