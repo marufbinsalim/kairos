@@ -1,7 +1,8 @@
-import { Command, Flags, Args } from '@oclif/core';
+import { Flags, Args } from '@oclif/core';
+import { BaseCommand } from '../../lib/base-command';
 import SecretsList from './list';
 
-export default class SecretsIndex extends Command {
+export default class SecretsIndex extends BaseCommand {
   static description = 'Decrypt and display secrets, or write to file with -g';
   static flags = {
     generate: Flags.boolean({ char: 'g', description: 'Write secrets to file instead of printing' }),

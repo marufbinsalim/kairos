@@ -1,4 +1,4 @@
-import { Command } from '@oclif/core';
+import { BaseCommand } from '../lib/base-command';
 import { unlinkSync, existsSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
@@ -10,7 +10,7 @@ const CONFIG_DIR = process.platform === 'win32'
   ? join(process.env.APPDATA ?? homedir(), 'kairos')
   : join(homedir(), '.config', 'kairos');
 
-export default class Logout extends Command {
+export default class Logout extends BaseCommand {
   static description = 'Log out and revoke all CLI devices';
 
   async run() {

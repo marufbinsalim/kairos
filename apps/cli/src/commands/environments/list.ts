@@ -1,10 +1,10 @@
-import { Command } from '@oclif/core';
+import { BaseCommand } from '../../lib/base-command';
 import { api } from '../../lib/api';
 import { loadConfig } from '../../lib/config';
 import { header, divider } from '../../lib/ui';
 import chalk from 'chalk';
 
-export default class EnvironmentsList extends Command {
+export default class EnvironmentsList extends BaseCommand {
   static description = 'List all environments across all projects';
 
   async run() {

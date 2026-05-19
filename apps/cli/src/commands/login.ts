@@ -1,4 +1,4 @@
-import { Command } from '@oclif/core';
+import { BaseCommand } from '../lib/base-command';
 import { createInterface } from 'readline';
 import { api } from '../lib/api';
 import { saveAuth } from '../lib/config';
@@ -35,7 +35,7 @@ function prompt(question: string, hidden = false): Promise<string> {
   });
 }
 
-export default class Login extends Command {
+export default class Login extends BaseCommand {
   static description = 'Log in to Kairos';
 
   async run() {

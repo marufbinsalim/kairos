@@ -1,4 +1,4 @@
-import { Command } from '@oclif/core';
+import { BaseCommand } from '../lib/base-command';
 import inquirer from 'inquirer';
 import { randomBytes } from 'crypto';
 import { api } from '../lib/api';
@@ -12,7 +12,7 @@ function randomDeviceName(): string {
 }
 import chalk from 'chalk';
 
-export default class Switch extends Command {
+export default class Switch extends BaseCommand {
   static description = 'Switch active project / environment';
 
   async run() {

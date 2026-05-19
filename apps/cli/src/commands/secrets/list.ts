@@ -1,4 +1,5 @@
-import { Command, Flags, Args } from '@oclif/core';
+import { Flags, Args } from '@oclif/core';
+import { BaseCommand } from '../../lib/base-command';
 import { resolve } from 'path';
 import { api } from '../../lib/api';
 import { loadPrivateKey } from '../../lib/keystore';
@@ -7,7 +8,7 @@ import { selfUnwrapDEK, unwrapDEKFromDevice, base64ToBytes, decryptSecret } from
 import { header, divider, ok } from '../../lib/ui';
 import chalk from 'chalk';
 
-export default class SecretsList extends Command {
+export default class SecretsList extends BaseCommand {
   static description = 'Decrypt and display secrets for active environment';
   static flags = {
     generate: Flags.boolean({ char: 'g', description: 'Write secrets to file instead of printing' }),

@@ -1,10 +1,11 @@
-import { Command, Args } from '@oclif/core';
+import { Args } from '@oclif/core';
+import { BaseCommand } from '../lib/base-command';
 import { api } from '../lib/api';
 import { loadConfig, saveConfig, loadAuth } from '../lib/config';
 import { ok } from '../lib/ui';
 import chalk from 'chalk';
 
-export default class Name extends Command {
+export default class Name extends BaseCommand {
   static description = 'Set a name for this device';
   static args = {
     name: Args.string({ required: true, description: 'Device name' }),
