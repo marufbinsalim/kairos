@@ -68,9 +68,9 @@ const updateSteps = {
 };
 
 const removeSteps = {
-  'Linux / macOS': `rm -rf ~/.kairos-cli ~/.config/kairos\n# Remove the PATH line from ~/.bashrc or ~/.zshrc:\n# Delete the line: export PATH="$HOME/.kairos-cli/bin:$PATH"`,
-  'Windows (PowerShell)': `Remove-Item -Recurse -Force "$env:USERPROFILE\\.kairos-cli"\nRemove-Item -Recurse -Force "$env:APPDATA\\kairos"\n$cur = [Environment]::GetEnvironmentVariable("PATH","User")\n$clean = ($cur -split ";") | Where-Object { $_ -notlike "*\\.kairos-cli*" } | Join-String -Separator ";"\n[Environment]::SetEnvironmentVariable("PATH",$clean,"User")`,
-  'Windows (CMD)': `rmdir /s /q "%USERPROFILE%\\.kairos-cli"\nrmdir /s /q "%APPDATA%\\kairos"`,
+  'Linux / macOS': `# 1. Remove binary\nrm -rf ~/.kairos-cli\n\n# 2. Remove config, auth, and keys\nrm -rf ~/.config/kairos\n\n# 3. Remove PATH entry from ~/.bashrc (Linux) or ~/.zshrc (macOS)\n#    Delete the line: export PATH="$HOME/.kairos-cli/bin:$PATH"\n#    Then reload:\nsource ~/.bashrc   # or: source ~/.zshrc`,
+  'Windows (PowerShell)': `# 1. Remove binary\nRemove-Item -Recurse -Force "$env:USERPROFILE\\.kairos-cli" -ErrorAction SilentlyContinue\n\n# 2. Remove config, auth, and keys (current location)\nRemove-Item -Recurse -Force "$env:APPDATA\\kairos" -ErrorAction SilentlyContinue\n\n# 3. Remove legacy config path (older CLI versions)\nRemove-Item -Recurse -Force "$env:USERPROFILE\\.config\\kairos" -ErrorAction SilentlyContinue\n\n# 4. Remove from PATH\n$cur = [Environment]::GetEnvironmentVariable("PATH","User")\n$clean = ($cur -split ";") | Where-Object { $_ -notlike "*\\.kairos-cli*" } | Join-String -Separator ";"\n[Environment]::SetEnvironmentVariable("PATH",$clean,"User")`,
+  'Windows (CMD)': `rem 1. Remove binary\nrmdir /s /q "%USERPROFILE%\\.kairos-cli"\n\nrem 2. Remove config, auth, and keys (current location)\nrmdir /s /q "%APPDATA%\\kairos"\n\nrem 3. Remove legacy config path (older CLI versions)\nrmdir /s /q "%USERPROFILE%\\.config\\kairos"\n\nrem 4. Remove from PATH:\nrem    Open: System Properties > Environment Variables > User variables > Path\nrem    Delete the entry: %USERPROFILE%\\.kairos-cli\\bin`,
 };
 
 export default function LandingPage() {
