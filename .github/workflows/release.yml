@@ -32,6 +32,9 @@ jobs:
       - name: Build CLI
         run: pnpm --filter @kairos/cli build
 
+      - name: Generate npm shrinkwrap for oclif
+        run: cd apps/cli && npm install --package-lock-only --ignore-scripts --legacy-peer-deps && npm shrinkwrap --ignore-scripts
+
       - name: Pack tarballs
         run: pnpm --filter @kairos/cli exec oclif pack tarballs --targets linux-x64,linux-arm64,darwin-x64,darwin-arm64,win32-x64
         env:
