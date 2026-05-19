@@ -54,10 +54,10 @@ const platforms = [
     steps: (_arch: string) => [
       {
         title: 'Download & extract (PowerShell)',
-        code: `$dest = "$env:USERPROFILE\\.kairos-cli"\nNew-Item -ItemType Directory -Force -Path $dest | Out-Null\ncurl -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C $dest --strip-components=1\nRemove-Item kairos.tar.gz`,
+        code: `$dest = "$env:USERPROFILE\\.kairos-cli"\nNew-Item -ItemType Directory -Force -Path $dest | Out-Null\ncurl.exe -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C $dest --strip-components=1\nRemove-Item kairos.tar.gz`,
       },
       {
-        title: 'Add to PATH (PowerShell)',
+        title: 'Add to PATH (PowerShell — run once)',
         code: `$bin = "$env:USERPROFILE\\.kairos-cli\\bin"\n$cur = [Environment]::GetEnvironmentVariable("PATH","User")\n[Environment]::SetEnvironmentVariable("PATH","$cur;$bin","User")`,
       },
       {
