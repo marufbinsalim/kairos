@@ -2,7 +2,9 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
 
-const CONFIG_DIR = join(homedir(), '.config', 'kairos');
+const CONFIG_DIR = process.platform === 'win32'
+  ? join(process.env.APPDATA ?? homedir(), 'kairos')
+  : join(homedir(), '.config', 'kairos');
 const CONFIG_PATH = join(CONFIG_DIR, 'config.json');
 const AUTH_PATH = join(CONFIG_DIR, 'auth.json');
 
