@@ -1,10 +1,8 @@
 import { Command } from '@oclif/core';
 import { createInterface } from 'readline';
 import { api } from '../lib/api';
-import { saveAuth, saveConfig } from '../lib/config';
+import { saveAuth } from '../lib/config';
 import { header, ok } from '../lib/ui';
-
-const API_URL = 'https://concave-pronto-earthlike.ngrok-free.dev';
 
 function prompt(question: string, hidden = false): Promise<string> {
   return new Promise((resolve) => {
@@ -41,8 +39,6 @@ export default class Login extends Command {
   static description = 'Log in to Kairos';
 
   async run() {
-    saveConfig({ apiUrl: API_URL });
-
     const email = await prompt('  Email: ');
     const pass = await prompt('  Password: ', true);
 
