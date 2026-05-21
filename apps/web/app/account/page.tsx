@@ -236,7 +236,7 @@ function RegenerateMnemonicSection() {
             </div>
           )}
           <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 mb-5">
-            <p className="text-amber-300/90 text-xs leading-relaxed">
+            <p className="text-amber-700 dark:text-amber-300 text-xs leading-relaxed">
               Generating a new phrase will <strong>invalidate your old one</strong>. Save the new phrase immediately — if you lose it and forget your password, your account is unrecoverable.
             </p>
           </div>
