@@ -5,7 +5,7 @@ import type {
   RegisterDeviceArgs, DeviceResponse, CompleteRegArgs, ApprovalArgs,
   UpsertSecretArgs,
   ChangePasswordArgs, UpdateMnemonicArgs, RecoveryInitResponse, ResetWithMnemonicArgs,
-  DeployToken, CreateDeployTokenArgs, RotateDeployTokenArgs,
+  DeployToken, CreateDeployTokenArgs,
 } from '@kairos/types';
 
 export const api = createApi({
@@ -124,7 +124,7 @@ export const api = createApi({
     resetWithMnemonic: build.mutation<{ message: string }, ResetWithMnemonicArgs>({
       query: (body) => ({ url: '/auth/reset-with-mnemonic', method: 'POST', body }),
     }),
-    listDeployTokens: build.query<DeployToken[], string>({
+    getDeployToken: build.query<DeployToken | null, string>({
       query: (environmentId) => `/deploy-tokens?environmentId=${environmentId}`,
       providesTags: ['DeployToken'],
     }),
@@ -134,10 +134,6 @@ export const api = createApi({
     }),
     revokeDeployToken: build.mutation<{ success: boolean }, string>({
       query: (id) => ({ url: `/deploy-tokens/${id}`, method: 'DELETE' }),
-      invalidatesTags: ['DeployToken'],
-    }),
-    rotateDeployToken: build.mutation<DeployToken, RotateDeployTokenArgs>({
-      query: ({ id, ...body }) => ({ url: `/deploy-tokens/${id}/rotate`, method: 'PATCH', body }),
       invalidatesTags: ['DeployToken'],
     }),
   }),
@@ -154,6 +150,6 @@ export const {
   useSyncEnvironmentQuery,
   useChangePasswordMutation, useUpdateMnemonicMutation,
   useRecoveryInitMutation, useResetWithMnemonicMutation,
-  useListDeployTokensQuery, useCreateDeployTokenMutation,
-  useRevokeDeployTokenMutation, useRotateDeployTokenMutation,
+  useGetDeployTokenQuery, useCreateDeployTokenMutation,
+  useRevokeDeployTokenMutation,
 } = api;

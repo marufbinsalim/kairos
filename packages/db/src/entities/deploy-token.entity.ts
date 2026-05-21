@@ -1,11 +1,12 @@
 import {
   Entity, PrimaryGeneratedColumn, Column, CreateDateColumn,
-  ManyToOne, JoinColumn,
+  ManyToOne, JoinColumn, Index,
 } from 'typeorm';
 import { Environment } from './environment.entity';
 import { User } from './user.entity';
 
 @Entity('deploy_tokens')
+@Index('UQ_DEPLOY_TOKEN_PER_ENV', ['environmentId'], { unique: true })
 export class DeployToken {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -29,9 +30,6 @@ export class DeployToken {
 
   @Column({ type: 'text' })
   tokenWrappedDEK: string;
-
-  @Column({ nullable: true, type: 'varchar' })
-  label: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

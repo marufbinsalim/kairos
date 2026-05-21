@@ -1,4 +1,4 @@
-import { IsString, IsUUID, IsOptional } from 'class-validator';
+import { IsString, IsUUID } from 'class-validator';
 
 export class CreateDeployTokenDto {
   @IsUUID()
@@ -9,8 +9,4 @@ export class CreateDeployTokenDto {
 
   @IsString()
   tokenWrappedDEK: string;
-
-  @IsOptional()
-  @IsString()
-  label?: string;
 }

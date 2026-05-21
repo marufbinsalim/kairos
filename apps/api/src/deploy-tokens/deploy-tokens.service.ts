@@ -18,28 +18,27 @@ export class DeployTokensService {
     private readonly secretRepo: Repository<Secret>,
   ) {}
 
-  async create(userId: string, dto: CreateDeployTokenDto) {
+  async upsert(userId: string, dto: CreateDeployTokenDto) {
     const env = await this.envRepo.findOne({ where: { id: dto.environmentId } });
     if (!env) throw new NotFoundException('Environment not found');
     const project = await this.projectRepo.findOne({ where: { id: env.projectId, userId } });
     if (!project) throw new ForbiddenException('Access denied');
 
-    const token = this.tokenRepo.create({
-      userId,
-      environmentId: dto.environmentId,
-      tokenHash: dto.tokenHash,
-      tokenWrappedDEK: dto.tokenWrappedDEK,
-      label: dto.label ?? null,
-    });
+    let token = await this.tokenRepo.findOne({ where: { environmentId: dto.environmentId, userId } });
+    if (token) {
+      token.tokenHash = dto.tokenHash;
+      token.tokenWrappedDEK = dto.tokenWrappedDEK;
+    } else {
+      token = this.tokenRepo.create({ userId, environmentId: dto.environmentId, tokenHash: dto.tokenHash, tokenWrappedDEK: dto.tokenWrappedDEK });
+    }
     await this.tokenRepo.save(token);
-    return { id: token.id, label: token.label, createdAt: token.createdAt };
+    return { id: token.id, environmentId: token.environmentId, createdAt: token.createdAt };
   }
 
-  async list(userId: string, environmentId: string) {
-    return this.tokenRepo.find({
+  async get(userId: string, environmentId: string) {
+    return this.tokenRepo.findOne({
       where: { userId, environmentId },
-      select: ['id', 'label', 'createdAt', 'environmentId'],
-      order: { createdAt: 'DESC' },
+      select: ['id', 'environmentId', 'createdAt'],
     });
   }
 
@@ -48,15 +47,6 @@ export class DeployTokensService {
     if (!token) throw new NotFoundException('Deploy token not found');
     await this.tokenRepo.remove(token);
     return { success: true };
-  }
-
-  async rotate(userId: string, tokenId: string, dto: { tokenHash: string; tokenWrappedDEK: string }) {
-    const token = await this.tokenRepo.findOne({ where: { id: tokenId, userId } });
-    if (!token) throw new NotFoundException('Deploy token not found');
-    token.tokenHash = dto.tokenHash;
-    token.tokenWrappedDEK = dto.tokenWrappedDEK;
-    await this.tokenRepo.save(token);
-    return { id: token.id, label: token.label, createdAt: token.createdAt };
   }
 
   async exportWithToken(rawToken: string) {

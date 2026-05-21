@@ -6,15 +6,14 @@ import Link from 'next/link';
 import {
   useListSecretsQuery, useUpsertSecretMutation, useDeleteSecretMutation,
   useListEnvironmentsQuery,
-  useListDeployTokensQuery, useCreateDeployTokenMutation,
-  useRevokeDeployTokenMutation, useRotateDeployTokenMutation,
+  useGetDeployTokenQuery, useCreateDeployTokenMutation,
+  useRevokeDeployTokenMutation,
 } from '@/lib/store/api';
 import { selectCrypto, setDEK } from '@/lib/store/cryptoSlice';
 import { selectAuth } from '@/lib/store/authSlice';
 import { encryptSecret, decryptSecret } from '@/lib/crypto/secrets';
 import { selfUnwrapDEK, wrapDEKWithToken } from '@/lib/crypto/dek';
 import { bytesToBase64, base64ToBytes } from '@/lib/crypto/keypair';
-import type { DeployToken } from '@kairos/types';
 import { AppShell } from '@/components/AppShell';
 import type { Secret } from '@kairos/types';
 
@@ -413,71 +412,52 @@ function SecretRow({
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 function DeployTokensSection({ envId, dek }: { envId: string; dek: Uint8Array | null }) {
-  const { data: tokens } = useListDeployTokensQuery(envId);
+  const { data: token } = useGetDeployTokenQuery(envId);
   const [createToken] = useCreateDeployTokenMutation();
   const [revokeToken] = useRevokeDeployTokenMutation();
-  const [rotateToken] = useRotateDeployTokenMutation();
-  const [label, setLabel] = useState('');
   const [newToken, setNewToken] = useState<string | null>(null);
-  const [creating, setCreating] = useState(false);
-  const [rotatingId, setRotatingId] = useState<string | null>(null);
-  const [rotatedToken, setRotatedToken] = useState<string | null>(null);
+  const [isRotation, setIsRotation] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
-  async function generateAndCreate() {
+  async function handleGenerate() {
     if (!dek) return;
-    setCreating(true);
+    setIsRotation(!!token);
+    setGenerating(true);
     try {
       const tokenBytes = crypto.getRandomValues(new Uint8Array(32));
-      const token = bytesToBase64(tokenBytes);
+      const rawToken = bytesToBase64(tokenBytes);
       const hashBuffer = await crypto.subtle.digest('SHA-256', tokenBytes);
       const tokenHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
       const tokenWrappedDEK = await wrapDEKWithToken(dek, tokenBytes);
-      await createToken({ environmentId: envId, tokenHash, tokenWrappedDEK, label: label || undefined }).unwrap();
-      setNewToken(token);
-      setLabel('');
+      await createToken({ environmentId: envId, tokenHash, tokenWrappedDEK }).unwrap();
+      setNewToken(rawToken);
     } finally {
-      setCreating(false);
-    }
-  }
-
-  async function handleRotate(token: DeployToken) {
-    if (!dek) return;
-    setRotatingId(token.id);
-    try {
-      const tokenBytes = crypto.getRandomValues(new Uint8Array(32));
-      const newRawToken = bytesToBase64(tokenBytes);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', tokenBytes);
-      const tokenHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-      const tokenWrappedDEK = await wrapDEKWithToken(dek, tokenBytes);
-      await rotateToken({ id: token.id, tokenHash, tokenWrappedDEK }).unwrap();
-      setRotatedToken(newRawToken);
-    } finally {
-      setRotatingId(null);
+      setGenerating(false);
     }
   }
 
   return (
     <div className="mt-10">
-      <h2 className="text-lg font-semibold text-white mb-1">Deploy Tokens</h2>
+      <h2 className="text-lg font-semibold text-white mb-1">Deploy Token</h2>
       <p className="text-gray-500 text-sm mb-5">
         Use a token to pull secrets in CI/CD without logging in.{' '}
         <code className="text-indigo-400 text-xs">kairos secrets -t $TOKEN</code>
       </p>
 
-      {(newToken || rotatedToken) && (
+      {newToken && (
         <div className="mb-5 bg-green-950/30 border border-green-700/40 rounded-xl px-4 py-4">
           <p className="text-green-400 text-sm font-medium mb-2">
-            {rotatedToken ? 'Token rotated — copy your new token now.' : 'Token created — copy it now. You won\'t see it again.'}
+            {isRotation ? 'Token rotated — copy your new token now.' : 'Token generated — copy it now. You won\'t see it again.'}
           </p>
           <div className="flex items-center gap-3 bg-gray-950 rounded-lg px-3 py-2.5">
-            <code className="text-green-300 font-mono text-xs flex-1 break-all">{newToken ?? rotatedToken}</code>
+            <code className="text-green-300 font-mono text-xs flex-1 break-all">{newToken}</code>
             <button
-              onClick={() => navigator.clipboard.writeText((newToken ?? rotatedToken)!)}
+              onClick={() => navigator.clipboard.writeText(newToken)}
               className="text-xs text-gray-400 hover:text-white px-2 py-1 rounded hover:bg-gray-700 shrink-0 transition-colors"
             >Copy</button>
           </div>
           <button
-            onClick={() => { setNewToken(null); setRotatedToken(null); }}
+            onClick={() => setNewToken(null)}
             className="mt-3 text-xs text-gray-500 hover:text-gray-300 transition-colors"
           >
             I've saved it — dismiss
@@ -485,52 +465,39 @@ function DeployTokensSection({ envId, dek }: { envId: string; dek: Uint8Array | 
         </div>
       )}
 
-      <div className="flex gap-3 mb-5">
-        <input
-          placeholder="Token label (optional)"
-          value={label}
-          onChange={(e) => setLabel(e.target.value)}
-          className="flex-1 bg-gray-800 border border-gray-700 focus:border-indigo-500 rounded-lg px-3.5 py-2.5 text-white placeholder-gray-600 text-sm outline-none transition-colors"
-        />
-        <button
-          onClick={generateAndCreate}
-          disabled={!dek || creating}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors"
-        >
-          {creating ? 'Generating…' : 'Generate token'}
-        </button>
-      </div>
-
-      {tokens && tokens.length > 0 && (
-        <div className="space-y-2">
-          {tokens.map((token) => (
-            <div key={token.id} className="flex items-center gap-4 bg-gray-900 border border-gray-800 rounded-xl px-5 py-3.5">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-white font-medium">{token.label ?? <span className="text-gray-500 italic">Unlabeled</span>}</p>
-                <p className="text-xs text-gray-500 mt-0.5">Created {new Date(token.createdAt).toLocaleDateString()}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleRotate(token)}
-                  disabled={!dek || rotatingId === token.id}
-                  className="text-xs text-gray-400 hover:text-indigo-300 hover:bg-indigo-950/30 disabled:opacity-40 px-3 py-1.5 rounded-lg border border-gray-700 transition-colors"
-                >
-                  {rotatingId === token.id ? 'Rotating…' : 'Rotate'}
-                </button>
-                <button
-                  onClick={() => revokeToken(token.id)}
-                  className="text-xs text-gray-400 hover:text-red-400 hover:bg-red-950/30 px-3 py-1.5 rounded-lg border border-gray-700 transition-colors"
-                >
-                  Revoke
-                </button>
-              </div>
-            </div>
-          ))}
+      {token ? (
+        <div className="flex items-center gap-4 bg-gray-900 border border-gray-800 rounded-xl px-5 py-3.5">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-white font-medium">Deploy token</p>
+            <p className="text-xs text-gray-500 mt-0.5">Generated {new Date(token.createdAt).toLocaleDateString()}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleGenerate}
+              disabled={!dek || generating}
+              className="text-xs text-gray-400 hover:text-indigo-300 hover:bg-indigo-950/30 disabled:opacity-40 px-3 py-1.5 rounded-lg border border-gray-700 transition-colors"
+            >
+              {generating ? 'Rotating…' : 'Rotate'}
+            </button>
+            <button
+              onClick={() => revokeToken(token.id)}
+              className="text-xs text-gray-400 hover:text-red-400 hover:bg-red-950/30 px-3 py-1.5 rounded-lg border border-gray-700 transition-colors"
+            >
+              Revoke
+            </button>
+          </div>
         </div>
-      )}
-
-      {tokens?.length === 0 && (
-        <p className="text-gray-600 text-sm">No deploy tokens yet.</p>
+      ) : (
+        <div className="flex items-center justify-between">
+          <p className="text-gray-600 text-sm">No deploy token for this environment.</p>
+          <button
+            onClick={handleGenerate}
+            disabled={!dek || generating}
+            className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+          >
+            {generating ? 'Generating…' : 'Generate token'}
+          </button>
+        </div>
       )}
     </div>
   );

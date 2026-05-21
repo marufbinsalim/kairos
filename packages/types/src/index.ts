@@ -132,19 +132,11 @@ export interface ResetWithMnemonicArgs {
 export interface DeployToken {
   id: string;
   environmentId: string;
-  label: string | null;
   createdAt: string;
 }
 
 export interface CreateDeployTokenArgs {
   environmentId: string;
-  tokenHash: string;
-  tokenWrappedDEK: string;
-  label?: string;
-}
-
-export interface RotateDeployTokenArgs {
-  id: string;
   tokenHash: string;
   tokenWrappedDEK: string;
 }
