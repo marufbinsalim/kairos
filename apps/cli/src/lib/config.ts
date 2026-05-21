@@ -30,9 +30,17 @@ interface AuthData {
   email?: string;
 }
 
+const DEFAULT_API_URL = 'https://kairoscli-api.onrender.com';
+const LEGACY_API_URLS = ['https://kairoscli-api.vercel.app'];
+
 export function loadConfig(): KairosConfig {
-  if (!existsSync(CONFIG_PATH)) return { apiUrl: 'https://kairoscli-api.onrender.com' };
-  return JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
+  if (!existsSync(CONFIG_PATH)) return { apiUrl: DEFAULT_API_URL };
+  const stored = JSON.parse(readFileSync(CONFIG_PATH, 'utf8')) as KairosConfig;
+  if (LEGACY_API_URLS.includes(stored.apiUrl)) {
+    stored.apiUrl = DEFAULT_API_URL;
+    saveConfig(stored);
+  }
+  return stored;
 }
 
 export function saveConfig(config: Partial<KairosConfig>): void {
