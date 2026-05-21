@@ -3,16 +3,14 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { ExpressAdapter } from '@nestjs/platform-express';
+import type { INestApplication } from '@nestjs/common';
 import { AppModule } from './app.module';
-import express from 'express';
 
-const server = express();
-let app: any;
+let app: INestApplication;
 
 async function bootstrap() {
   if (app) return app;
-  app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+  app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.enableCors({
@@ -34,8 +32,8 @@ if (require.main === module) {
   });
 }
 
-// Vercel handler
+// Vercel handler — gets the underlying Express instance without importing express directly
 export default async (req: any, res: any) => {
-  await bootstrap();
-  server(req, res);
+  const nestApp = await bootstrap();
+  nestApp.getHttpAdapter().getInstance()(req, res);
 };
