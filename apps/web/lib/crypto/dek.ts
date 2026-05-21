@@ -67,6 +67,25 @@ export async function wrapDEKForDevice(
   return bytesToBase64(result);
 }
 
+export async function wrapDEKWithToken(dek: Uint8Array, tokenBytes: Uint8Array): Promise<string> {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await crypto.subtle.importKey('raw', toBuffer(tokenBytes), 'AES-GCM', false, ['encrypt']);
+  const encrypted = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, toBuffer(dek)));
+  const result = new Uint8Array(12 + encrypted.byteLength);
+  result.set(iv, 0);
+  result.set(encrypted, 12);
+  return bytesToBase64(result);
+}
+
+export async function unwrapDEKWithToken(tokenWrappedDEK: string, tokenBytes: Uint8Array): Promise<Uint8Array> {
+  const buf = base64ToBytes(tokenWrappedDEK);
+  const iv = buf.slice(0, 12);
+  const ciphertext = buf.slice(12);
+  const key = await crypto.subtle.importKey('raw', toBuffer(tokenBytes), 'AES-GCM', false, ['decrypt']);
+  const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: toBuffer(iv) }, key, toBuffer(ciphertext));
+  return new Uint8Array(decrypted);
+}
+
 export async function unwrapDEKFromDevice(
   myPrivateKey: Uint8Array,
   theirPublicKey: Uint8Array,

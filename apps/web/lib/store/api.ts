@@ -5,6 +5,7 @@ import type {
   RegisterDeviceArgs, DeviceResponse, CompleteRegArgs, ApprovalArgs,
   UpsertSecretArgs,
   ChangePasswordArgs, UpdateMnemonicArgs, RecoveryInitResponse, ResetWithMnemonicArgs,
+  DeployToken, CreateDeployTokenArgs, RotateDeployTokenArgs,
 } from '@kairos/types';
 
 export const api = createApi({
@@ -18,7 +19,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Device', 'Project', 'Environment', 'Secret'],
+  tagTypes: ['Device', 'Project', 'Environment', 'Secret', 'DeployToken'],
   endpoints: (build) => ({
     register: build.mutation<AuthResponse, { email: string; password: string; encryptedPrivateKey?: string; mnemonicEncryptedPrivateKey?: string; publicKey?: string }>({
       query: (body) => ({ url: '/auth/register', method: 'POST', body }),
@@ -123,6 +124,22 @@ export const api = createApi({
     resetWithMnemonic: build.mutation<{ message: string }, ResetWithMnemonicArgs>({
       query: (body) => ({ url: '/auth/reset-with-mnemonic', method: 'POST', body }),
     }),
+    listDeployTokens: build.query<DeployToken[], string>({
+      query: (environmentId) => `/deploy-tokens?environmentId=${environmentId}`,
+      providesTags: ['DeployToken'],
+    }),
+    createDeployToken: build.mutation<DeployToken, CreateDeployTokenArgs>({
+      query: (body) => ({ url: '/deploy-tokens', method: 'POST', body }),
+      invalidatesTags: ['DeployToken'],
+    }),
+    revokeDeployToken: build.mutation<{ success: boolean }, string>({
+      query: (id) => ({ url: `/deploy-tokens/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['DeployToken'],
+    }),
+    rotateDeployToken: build.mutation<DeployToken, RotateDeployTokenArgs>({
+      query: ({ id, ...body }) => ({ url: `/deploy-tokens/${id}/rotate`, method: 'PATCH', body }),
+      invalidatesTags: ['DeployToken'],
+    }),
   }),
 });
 
@@ -137,4 +154,6 @@ export const {
   useSyncEnvironmentQuery,
   useChangePasswordMutation, useUpdateMnemonicMutation,
   useRecoveryInitMutation, useResetWithMnemonicMutation,
+  useListDeployTokensQuery, useCreateDeployTokenMutation,
+  useRevokeDeployTokenMutation, useRotateDeployTokenMutation,
 } = api;

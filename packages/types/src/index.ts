@@ -129,3 +129,28 @@ export interface ResetWithMnemonicArgs {
   newEncryptedPrivateKey: string;
 }
 
+export interface DeployToken {
+  id: string;
+  environmentId: string;
+  label: string | null;
+  createdAt: string;
+}
+
+export interface CreateDeployTokenArgs {
+  environmentId: string;
+  tokenHash: string;
+  tokenWrappedDEK: string;
+  label?: string;
+}
+
+export interface RotateDeployTokenArgs {
+  id: string;
+  tokenHash: string;
+  tokenWrappedDEK: string;
+}
+
+export interface DeployExportPayload {
+  tokenWrappedDEK: string;
+  secrets: Array<{ key: string; encryptedValue: string; iv: string }>;
+}
+

@@ -129,11 +129,12 @@ export default function LandingPage() {
         </section>
 
         {/* Features */}
-        <section className="pb-24 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <section className="pb-24 grid grid-cols-1 md:grid-cols-4 gap-4">
           {[
             { title: 'End-to-end encrypted', desc: 'AES-256-GCM encryption. Your private key never leaves your device.' },
             { title: 'CLI-first', desc: 'Pull secrets into .env files, CI pipelines, or your terminal in one command.' },
             { title: 'Multi-device', desc: 'Approve new devices from the web UI. Each device gets its own encrypted key.' },
+            { title: 'Deploy tokens', desc: 'Generate scoped tokens for CI/CD. No login, no device, no password.' },
           ].map((f) => (
             <div key={f.title} className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
               <h3 className="text-white font-semibold mb-2">{f.title}</h3>
@@ -142,10 +143,25 @@ export default function LandingPage() {
           ))}
         </section>
 
-        {/* Install */}
-        <section id="install" className="pb-24">
+        {/* One-liner install */}
+        <section id="install" className="pb-16">
           <h2 className="text-2xl font-bold text-white mb-2">Install the CLI</h2>
-          <p className="text-gray-400 mb-8">Standalone binary — no Node.js required.</p>
+          <p className="text-gray-400 mb-6">One command — detects your OS and arch automatically.</p>
+          <div className="space-y-3 mb-4">
+            <CodeBlock title="Linux / macOS" code="curl -sL https://kairoscli.vercel.app/install | sh" />
+            <CodeBlock title="Windows (PowerShell)" code="irm https://kairoscli.vercel.app/install.ps1 | iex" />
+          </div>
+          <p className="text-gray-500 text-sm mb-10">No sudo required. Installs to <code className="text-gray-400">~/.local/share/kairos</code> and adds to PATH automatically.</p>
+
+          <h3 className="text-lg font-semibold text-white mb-2">Uninstall</h3>
+          <p className="text-gray-400 mb-4 text-sm">Removes the binary and PATH entry.</p>
+          <div className="space-y-3 mb-16">
+            <CodeBlock title="Linux / macOS" code="curl -sL https://kairoscli.vercel.app/uninstall | sh" />
+            <CodeBlock title="Windows (PowerShell)" code="irm https://kairoscli.vercel.app/uninstall.ps1 | iex" />
+          </div>
+
+          <h3 className="text-lg font-semibold text-white mb-2">Manual install</h3>
+          <p className="text-gray-400 mb-8 text-sm">Prefer to install manually? Choose your platform below.</p>
 
           {/* Platform tabs */}
           <div className="flex gap-2 mb-6">
@@ -267,6 +283,33 @@ export default function LandingPage() {
           {removePlatform === 'Windows (CMD)' && (
             <p className="text-xs text-gray-500 mt-3">For CMD, remove the PATH entry manually: open System Properties → Environment Variables → edit Path under your user and delete the kairos entry.</p>
           )}
+        </section>
+
+        {/* Deploy tokens */}
+        <section className="pb-24">
+          <h2 className="text-2xl font-bold text-white mb-2">Deploy tokens</h2>
+          <p className="text-gray-400 mb-8">Pull secrets in CI/CD without logging in. Generate a scoped token per environment from the web UI — secrets stay E2E encrypted.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">GitHub Actions</p>
+              <pre className="text-sm text-gray-200 font-mono whitespace-pre overflow-x-auto">{`- name: Load secrets
+  run: kairos secrets -t \${{ secrets.KAIROS_TOKEN }} >> $GITHUB_ENV
+
+- run: npm run build`}</pre>
+            </div>
+            <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Docker / any CI</p>
+              <pre className="text-sm text-gray-200 font-mono whitespace-pre overflow-x-auto">{`# inject and run
+kairos run -t $KAIROS_TOKEN -- npm run build
+
+# write to .env
+kairos secrets -t $KAIROS_TOKEN -g .env`}</pre>
+            </div>
+          </div>
+          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Docker Compose</p>
+            <pre className="text-sm text-gray-200 font-mono whitespace-pre overflow-x-auto">{`kairos secrets -t $KAIROS_TOKEN -g .env && docker compose up`}</pre>
+          </div>
         </section>
 
         {/* CTA */}
