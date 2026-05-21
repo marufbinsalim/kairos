@@ -27,7 +27,8 @@ fi
 
 CURRENT=""
 if command -v kairos > /dev/null 2>&1; then
-  CURRENT=$(kairos --version 2>/dev/null | grep -o 'v[0-9]*\\.[0-9]*\\.[0-9]*' | head -1)
+  CURRENT="v$(kairos --version 2>/dev/null | grep -o '[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]*' | head -1)"
+  [ "\$CURRENT" = "v" ] && CURRENT=""
 fi
 
 if [ "\$CURRENT" = "\$LATEST" ]; then
