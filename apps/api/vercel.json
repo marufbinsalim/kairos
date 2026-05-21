@@ -1,5 +1,4 @@
 {
   "installCommand": "cd ../.. && pnpm install",
-  "buildCommand": "cd ../.. && pnpm --filter @kairos/db build && pnpm --filter @kairos/api build",
-  "outputDirectory": "dist"
+  "buildCommand": "cd ../.. && pnpm --filter @kairos/db build"
 }
