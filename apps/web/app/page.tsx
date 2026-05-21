@@ -50,21 +50,21 @@ const macSteps = (arch: string) => [
 ];
 
 const winPsSteps = [
-  { n: 1, title: 'Download & extract', code: `$dest = "$env:LOCALAPPDATA\\kairos"\n$ProgressPreference = 'SilentlyContinue'\nNew-Item -ItemType Directory -Force -Path $dest | Out-Null\ncurl.exe -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C $dest --strip-components=1\nRemove-Item kairos.tar.gz` },
+  { n: 1, title: 'Download & extract', code: `$dest = "$env:LOCALAPPDATA\\kairos"\n$ProgressPreference = 'SilentlyContinue'\nNew-Item -ItemType Directory -Force -Path $dest | Out-Null\ncurl.exe -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C $dest --strip-components=1 --exclude='kairos/node_modules/.bin' --exclude='node_modules/.bin'\nRemove-Item kairos.tar.gz` },
   { n: 2, title: 'Add to PATH (run once)', code: `$bin = "$env:LOCALAPPDATA\\kairos\\bin"\n$cur = [Environment]::GetEnvironmentVariable("PATH","User")\n[Environment]::SetEnvironmentVariable("PATH","$cur;$bin","User")\n$env:PATH = "$env:PATH;$bin"` },
   { n: 3, title: 'Verify', code: 'kairos' },
 ];
 
 const winCmdSteps = [
-  { n: 1, title: 'Download & extract', code: `mkdir "%LOCALAPPDATA%\\kairos"\ncurl -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "%LOCALAPPDATA%\\kairos" --strip-components=1\ndel kairos.tar.gz` },
+  { n: 1, title: 'Download & extract', code: `mkdir "%LOCALAPPDATA%\\kairos"\ncurl -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "%LOCALAPPDATA%\\kairos" --strip-components=1 --exclude=kairos/node_modules/.bin --exclude=node_modules/.bin\ndel kairos.tar.gz` },
   { n: 2, title: 'Add to PATH (run once)', code: `setx PATH "%LOCALAPPDATA%\\kairos\\bin;%PATH%"` },
   { n: 3, title: 'Close & reopen terminal, then verify', code: 'kairos' },
 ];
 
 const updateSteps = {
   'Linux / macOS': `curl -sL ${BASE}/kairos-linux-x64.tar.gz | tar xz -C ~/.local/share/kairos --strip-components=1`,
-  'Windows (PowerShell)': `$ProgressPreference = 'SilentlyContinue'\ncurl.exe -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "$env:LOCALAPPDATA\\kairos" --strip-components=1\nRemove-Item kairos.tar.gz`,
-  'Windows (CMD)': `curl -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "%LOCALAPPDATA%\\kairos" --strip-components=1\ndel kairos.tar.gz`,
+  'Windows (PowerShell)': `$ProgressPreference = 'SilentlyContinue'\ncurl.exe -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "$env:LOCALAPPDATA\\kairos" --strip-components=1 --exclude='kairos/node_modules/.bin' --exclude='node_modules/.bin'\nRemove-Item kairos.tar.gz`,
+  'Windows (CMD)': `curl -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "%LOCALAPPDATA%\\kairos" --strip-components=1 --exclude=kairos/node_modules/.bin --exclude=node_modules/.bin\ndel kairos.tar.gz`,
 };
 
 const removeSteps = {

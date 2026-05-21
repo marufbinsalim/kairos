@@ -35,7 +35,7 @@ $installDir = Join-Path $env:LOCALAPPDATA "kairos"
 Invoke-WebRequest -Uri $url -OutFile $tmp -UseBasicParsing
 Remove-Item $installDir -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $installDir | Out-Null
-tar -xzf $tmp -C $installDir --strip-components=1
+tar -xzf $tmp -C $installDir --strip-components=1 --exclude='kairos/node_modules/.bin' --exclude='node_modules/.bin'
 Remove-Item $tmp
 
 $binDir = Join-Path $installDir "bin"
