@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 const REPO = 'marufbinsalim/kairos';
 
 const SCRIPT = `$ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
 
 $latest = (Invoke-RestMethod "https://api.github.com/repos/${REPO}/releases/latest").tag_name
 
@@ -41,7 +42,9 @@ $binDir = Join-Path $installDir "bin"
 $currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
 if ($currentPath -notlike "*$binDir*") {
   [Environment]::SetEnvironmentVariable("PATH", "$currentPath;$binDir", "User")
-  Write-Host "Added kairos to PATH — restart your terminal to use it"
+}
+if ($env:PATH -notlike "*$binDir*") {
+  $env:PATH = "$env:PATH;$binDir"
 }
 
 Write-Host "kairos $latest installed. Run 'kairos --help' to get started"
