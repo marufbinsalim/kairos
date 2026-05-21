@@ -38,39 +38,39 @@ function CodeBlock({ title, code }: { title?: string; code: string }) {
 }
 
 const linuxSteps = (arch: string) => [
-  { n: 1, title: 'Download & extract', code: `mkdir -p ~/.kairos-cli\ncurl -sL ${BASE}/kairos-linux-${arch}.tar.gz | tar xz -C ~/.kairos-cli --strip-components=1` },
-  { n: 2, title: 'Add to PATH', code: `echo 'export PATH="$HOME/.kairos-cli/bin:$PATH"' >> ~/.bashrc\nsource ~/.bashrc` },
+  { n: 1, title: 'Download & extract', code: `mkdir -p ~/.local/share/kairos ~/.local/bin\ncurl -sL ${BASE}/kairos-linux-${arch}.tar.gz | tar xz -C ~/.local/share/kairos --strip-components=1\nln -sf ~/.local/share/kairos/bin/kairos ~/.local/bin/kairos` },
+  { n: 2, title: 'Add to PATH', code: `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc\nsource ~/.bashrc` },
   { n: 3, title: 'Verify', code: 'kairos' },
 ];
 
 const macSteps = (arch: string) => [
-  { n: 1, title: 'Download & extract', code: `mkdir -p ~/.kairos-cli\ncurl -sL ${BASE}/kairos-darwin-${arch}.tar.gz | tar xz -C ~/.kairos-cli --strip-components=1` },
-  { n: 2, title: 'Add to PATH', code: `echo 'export PATH="$HOME/.kairos-cli/bin:$PATH"' >> ~/.zshrc\nsource ~/.zshrc` },
+  { n: 1, title: 'Download & extract', code: `mkdir -p ~/.local/share/kairos ~/.local/bin\ncurl -sL ${BASE}/kairos-darwin-${arch}.tar.gz | tar xz -C ~/.local/share/kairos --strip-components=1\nln -sf ~/.local/share/kairos/bin/kairos ~/.local/bin/kairos` },
+  { n: 2, title: 'Add to PATH', code: `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc\nsource ~/.zshrc` },
   { n: 3, title: 'Verify', code: 'kairos' },
 ];
 
 const winPsSteps = [
-  { n: 1, title: 'Download & extract', code: `$dest = "$env:USERPROFILE\\.kairos-cli"\nNew-Item -ItemType Directory -Force -Path $dest | Out-Null\ncurl.exe -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C $dest --strip-components=1 --exclude=kairos/node_modules/.bin\nRemove-Item kairos.tar.gz` },
-  { n: 2, title: 'Add to PATH (run once)', code: `$bin = "$env:USERPROFILE\\.kairos-cli\\bin"\n$cur = [Environment]::GetEnvironmentVariable("PATH","User")\n[Environment]::SetEnvironmentVariable("PATH","$cur;$bin","User")` },
-  { n: 3, title: 'Close & reopen terminal, then verify', code: 'kairos' },
+  { n: 1, title: 'Download & extract', code: `$dest = "$env:LOCALAPPDATA\\kairos"\n$ProgressPreference = 'SilentlyContinue'\nNew-Item -ItemType Directory -Force -Path $dest | Out-Null\ncurl.exe -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C $dest --strip-components=1\nRemove-Item kairos.tar.gz` },
+  { n: 2, title: 'Add to PATH (run once)', code: `$bin = "$env:LOCALAPPDATA\\kairos\\bin"\n$cur = [Environment]::GetEnvironmentVariable("PATH","User")\n[Environment]::SetEnvironmentVariable("PATH","$cur;$bin","User")\n$env:PATH = "$env:PATH;$bin"` },
+  { n: 3, title: 'Verify', code: 'kairos' },
 ];
 
 const winCmdSteps = [
-  { n: 1, title: 'Download & extract', code: `mkdir "%USERPROFILE%\\.kairos-cli"\ncurl -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "%USERPROFILE%\\.kairos-cli" --strip-components=1 --exclude=kairos/node_modules/.bin\ndel kairos.tar.gz` },
-  { n: 2, title: 'Add to PATH (run once)', code: `setx PATH "%USERPROFILE%\\.kairos-cli\\bin"` },
+  { n: 1, title: 'Download & extract', code: `mkdir "%LOCALAPPDATA%\\kairos"\ncurl -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "%LOCALAPPDATA%\\kairos" --strip-components=1\ndel kairos.tar.gz` },
+  { n: 2, title: 'Add to PATH (run once)', code: `setx PATH "%LOCALAPPDATA%\\kairos\\bin;%PATH%"` },
   { n: 3, title: 'Close & reopen terminal, then verify', code: 'kairos' },
 ];
 
 const updateSteps = {
-  'Linux / macOS': `curl -sL ${BASE}/kairos-linux-x64.tar.gz | tar xz -C ~/.kairos-cli --strip-components=1`,
-  'Windows (PowerShell)': `curl.exe -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "$env:USERPROFILE\\.kairos-cli" --strip-components=1 --exclude=kairos/node_modules/.bin\nRemove-Item kairos.tar.gz`,
-  'Windows (CMD)': `curl -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "%USERPROFILE%\\.kairos-cli" --strip-components=1 --exclude=kairos/node_modules/.bin\ndel kairos.tar.gz`,
+  'Linux / macOS': `curl -sL ${BASE}/kairos-linux-x64.tar.gz | tar xz -C ~/.local/share/kairos --strip-components=1`,
+  'Windows (PowerShell)': `$ProgressPreference = 'SilentlyContinue'\ncurl.exe -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "$env:LOCALAPPDATA\\kairos" --strip-components=1\nRemove-Item kairos.tar.gz`,
+  'Windows (CMD)': `curl -L ${BASE}/kairos-win32-x64.tar.gz -o kairos.tar.gz\ntar -xzf kairos.tar.gz -C "%LOCALAPPDATA%\\kairos" --strip-components=1\ndel kairos.tar.gz`,
 };
 
 const removeSteps = {
-  'Linux / macOS': `# 1. Remove binary\nrm -rf ~/.kairos-cli\n\n# 2. Remove config, auth, and keys\nrm -rf ~/.config/kairos\n\n# 3. Remove PATH entry from ~/.bashrc (Linux) or ~/.zshrc (macOS)\n#    Delete the line: export PATH="$HOME/.kairos-cli/bin:$PATH"\n#    Then reload:\nsource ~/.bashrc   # or: source ~/.zshrc`,
-  'Windows (PowerShell)': `# 1. Remove binary\nRemove-Item -Recurse -Force "$env:USERPROFILE\\.kairos-cli" -ErrorAction SilentlyContinue\n\n# 2. Remove config, auth, and keys (current location)\nRemove-Item -Recurse -Force "$env:APPDATA\\kairos" -ErrorAction SilentlyContinue\n\n# 3. Remove legacy config path (older CLI versions)\nRemove-Item -Recurse -Force "$env:USERPROFILE\\.config\\kairos" -ErrorAction SilentlyContinue\n\n# 4. Remove from PATH\n$cur = [Environment]::GetEnvironmentVariable("PATH","User")\n$clean = ($cur -split ";") | Where-Object { $_ -notlike "*\\.kairos-cli*" } | Join-String -Separator ";"\n[Environment]::SetEnvironmentVariable("PATH",$clean,"User")`,
-  'Windows (CMD)': `rem 1. Remove binary\nrmdir /s /q "%USERPROFILE%\\.kairos-cli"\n\nrem 2. Remove config, auth, and keys (current location)\nrmdir /s /q "%APPDATA%\\kairos"\n\nrem 3. Remove legacy config path (older CLI versions)\nrmdir /s /q "%USERPROFILE%\\.config\\kairos"\n\nrem 4. Remove from PATH:\nrem    Open: System Properties > Environment Variables > User variables > Path\nrem    Delete the entry: %USERPROFILE%\\.kairos-cli\\bin`,
+  'Linux / macOS': `# Remove binary and symlink\nrm -rf ~/.local/share/kairos\nrm -f ~/.local/bin/kairos\n\n# Remove config, auth, and keys\nrm -rf ~/.config/kairos\n\n# Remove PATH entry from ~/.bashrc (Linux) or ~/.zshrc (macOS)\n#   Delete the line: export PATH="$HOME/.local/bin:$PATH"\n#   Then reload:\nsource ~/.bashrc   # or: source ~/.zshrc`,
+  'Windows (PowerShell)': `# Remove binary\nRemove-Item -Recurse -Force "$env:LOCALAPPDATA\\kairos" -ErrorAction SilentlyContinue\n\n# Remove from PATH\n$bin = "$env:LOCALAPPDATA\\kairos\\bin"\n$cur = [Environment]::GetEnvironmentVariable("PATH","User")\n$clean = (($cur -split ";") | Where-Object { $_ -ne $bin }) -join ";"\n[Environment]::SetEnvironmentVariable("PATH",$clean,"User")\n$env:PATH = (($env:PATH -split ";") | Where-Object { $_ -ne $bin }) -join ";"`,
+  'Windows (CMD)': `rem Remove binary\nrmdir /s /q "%LOCALAPPDATA%\\kairos"\n\nrem Remove from PATH:\nrem   Open: System Properties > Environment Variables > User variables > Path\nrem   Delete the entry: %LOCALAPPDATA%\\kairos\\bin`,
 };
 
 export default function LandingPage() {
