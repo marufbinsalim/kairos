@@ -14,7 +14,8 @@ if (-not $latest) {
 
 $current = ""
 if (Get-Command kairos -ErrorAction SilentlyContinue) {
-  $current = (kairos --version 2>$null) -replace '.*?(v[\\d.]+).*', '$1'
+  $ver = (kairos --version 2>$null) -replace '^[^/]+/([0-9]+\\.[0-9]+\\.[0-9]+).*', '$1'
+  if ($ver -match '^[0-9]') { $current = "v$ver" }
 }
 
 if ($current -eq $latest) {
