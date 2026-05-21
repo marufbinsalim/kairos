@@ -20,7 +20,7 @@ export default class Run extends BaseCommand {
     const { flags, argv } = await this.parse(Run);
 
     const sepIdx = argv.indexOf('--');
-    const cmdArgs = sepIdx >= 0 ? argv.slice(sepIdx + 1) : argv.filter((a) => !a.startsWith('-'));
+    const cmdArgs = sepIdx >= 0 ? argv.slice(sepIdx + 1) : (argv as string[]).filter((a) => !a.startsWith('-'));
     if (!cmdArgs.length) this.error('Specify a command after --');
 
     const token = flags.token;
