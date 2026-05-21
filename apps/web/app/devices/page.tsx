@@ -76,27 +76,27 @@ function ApproveModal({ device, onClose }: { device: Device; onClose: () => void
       className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={(e) => { if (!loading && e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-md shadow-2xl">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 w-full max-w-md shadow-2xl">
         <div className="flex items-start gap-3 mb-5">
           <div className="w-9 h-9 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center flex-shrink-0 text-indigo-400">
             <DeviceIcon type={device.type} />
           </div>
           <div>
-            <h2 className="text-base font-semibold text-white">Approve Device</h2>
-            <p className="text-gray-400 text-sm mt-0.5">{device.label ?? device.type}</p>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">Approve Device</h2>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mt-0.5">{device.label ?? device.type}</p>
           </div>
         </div>
 
         {requestedEnvs.length > 0 ? (
           <div className="mb-5">
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">
               Requested environments ({requestedEnvs.length})
             </p>
             <div className="space-y-1.5">
               {requestedEnvs.map((env) => (
-                <div key={env.id} className="flex items-center gap-2.5 bg-gray-800/60 border border-gray-700/60 rounded-lg px-3 py-2">
+                <div key={env.id} className="flex items-center gap-2.5 bg-gray-100/60 dark:bg-gray-800/60 border border-gray-200/60 dark:border-gray-700/60 rounded-lg px-3 py-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 flex-shrink-0" />
-                  <span className="text-sm text-gray-200">{env.name}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-200">{env.name}</span>
                 </div>
               ))}
             </div>
@@ -128,7 +128,7 @@ function ApproveModal({ device, onClose }: { device: Device; onClose: () => void
               onClose();
             }}
             disabled={loading || denying}
-            className="flex-1 bg-gray-800 hover:bg-red-950/40 hover:border-red-800/40 border border-transparent disabled:opacity-50 text-gray-300 hover:text-red-400 py-2.5 rounded-lg text-sm font-medium transition-colors"
+            className="flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-red-950/40 hover:border-red-800/40 border border-transparent disabled:opacity-50 text-gray-700 dark:text-gray-300 hover:text-red-400 py-2.5 rounded-lg text-sm font-medium transition-colors"
           >
             {denying ? 'Denying…' : 'Deny'}
           </button>
@@ -156,12 +156,12 @@ function ApproveModal({ device, onClose }: { device: Device; onClose: () => void
 function EmptyDevices() {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="w-12 h-12 rounded-2xl bg-gray-900 border border-gray-800 flex items-center justify-center mb-4">
-        <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <div className="w-12 h-12 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center mb-4">
+        <svg className="w-5 h-5 text-gray-400 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3" />
         </svg>
       </div>
-      <h3 className="text-white font-semibold mb-1">No active devices</h3>
+      <h3 className="text-gray-900 dark:text-white font-semibold mb-1">No active devices</h3>
       <p className="text-gray-500 text-sm max-w-xs">Create an environment to activate your web device, or register the CLI.</p>
     </div>
   );
@@ -184,9 +184,9 @@ export default function DevicesPage() {
 
   return (
     <AppShell>
-      <div className="px-8 py-8 max-w-4xl mx-auto">
+      <div className="px-4 sm:px-8 py-8 max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white tracking-tight">Devices</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Devices</h1>
           <p className="text-gray-500 text-sm mt-0.5">Manage trusted devices that can access your secrets</p>
         </div>
 
@@ -195,7 +195,7 @@ export default function DevicesPage() {
           <section className="mb-8">
             <div className="flex items-center gap-2 mb-3">
               <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
-              <h2 className="text-sm font-semibold text-white uppercase tracking-wider">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">
                 Pending Approval
                 <span className="ml-2 text-yellow-400 font-bold">{otherPending.length}</span>
               </h2>
@@ -210,7 +210,7 @@ export default function DevicesPage() {
                     <DeviceIcon type={d.type} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-white text-sm truncate">{d.label ?? d.type}</p>
+                    <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{d.label ?? d.type}</p>
                     <p className="text-gray-500 text-xs mt-0.5 font-mono">{d.publicKey.slice(0, 24)}…</p>
                     {d.requestedEnvInfo && d.requestedEnvInfo.length > 0 && (
                       <p className="text-yellow-500/70 text-xs mt-1">
@@ -235,16 +235,16 @@ export default function DevicesPage() {
 
         {/* Active devices */}
         <section>
-          <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">Active Devices</h2>
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-3">Active Devices</h2>
           {loadingActive ? (
             <div className="space-y-3">
               {[1, 2].map((i) => (
-                <div key={i} className="bg-gray-900 border border-gray-800 rounded-xl px-5 py-4 animate-pulse">
+                <div key={i} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-5 py-4 animate-pulse">
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 bg-gray-800 rounded-lg" />
+                    <div className="w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-lg" />
                     <div className="space-y-2 flex-1">
-                      <div className="h-4 w-1/3 bg-gray-800 rounded" />
-                      <div className="h-3 w-1/4 bg-gray-800 rounded" />
+                      <div className="h-4 w-1/3 bg-gray-100 dark:bg-gray-800 rounded" />
+                      <div className="h-3 w-1/4 bg-gray-100 dark:bg-gray-800 rounded" />
                     </div>
                   </div>
                 </div>
@@ -257,14 +257,14 @@ export default function DevicesPage() {
               {activeDevices.map((d) => (
                 <div
                   key={d.id}
-                  className="flex items-center gap-4 bg-gray-900 border border-gray-800 rounded-xl px-5 py-4"
+                  className="flex items-center gap-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-5 py-4"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center flex-shrink-0 text-gray-400">
+                  <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center flex-shrink-0 text-gray-500 dark:text-gray-400">
                     <DeviceIcon type={d.type} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <p className="font-medium text-white text-sm truncate">{d.label ?? d.type}</p>
+                      <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{d.label ?? d.type}</p>
                       {d.id === deviceId && (
                         <span className="text-xs bg-indigo-500/15 text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded-full flex-shrink-0">
                           this device
@@ -277,7 +277,7 @@ export default function DevicesPage() {
                     {d.environments && d.environments.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {d.environments.map((e) => (
-                          <span key={e.id} className="text-xs bg-gray-800 border border-gray-700 text-gray-400 px-2 py-0.5 rounded font-mono">
+                          <span key={e.id} className="text-xs bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded font-mono">
                             {e.projectName ? `${e.projectName} › ` : ''}{e.name}
                           </span>
                         ))}

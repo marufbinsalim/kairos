@@ -13,15 +13,16 @@ import {
   wrapPrivateKeyWithMnemonic,
 } from '@/lib/crypto/keypair';
 import { DeviceType } from '@kairos/types';
+import { useTheme } from '@/components/ThemeProvider';
 import Link from 'next/link';
 
 type Step = 'credentials' | 'mnemonic';
 
 function MnemonicWord({ index, word }: { index: number; word: string }) {
   return (
-    <div className="flex items-center gap-2 bg-gray-800 rounded-lg px-3 py-2">
+    <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2">
       <span className="text-gray-500 text-xs w-5 text-right flex-shrink-0">{index + 1}.</span>
-      <span className="text-white text-sm font-mono">{word}</span>
+      <span className="text-gray-900 dark:text-white text-sm font-mono">{word}</span>
     </div>
   );
 }
@@ -40,6 +41,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const [register] = useRegisterMutation();
   const [registerDevice] = useRegisterDeviceMutation();
+  const { theme, toggle } = useTheme();
 
   async function handleCredentialsSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -106,42 +108,58 @@ export default function RegisterPage() {
   const words = mnemonic.split(' ');
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="flex items-center gap-2.5 mb-8">
-          <div className="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
-            <span className="text-indigo-400 font-bold">K</span>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
+              <span className="text-indigo-500 dark:text-indigo-400 font-bold">K</span>
+            </div>
+            <span className="text-gray-900 dark:text-white font-semibold text-lg tracking-tight">kairos</span>
           </div>
-          <span className="text-white font-semibold text-lg tracking-tight">kairos</span>
+          <button
+            onClick={toggle}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            {theme === 'dark' ? (
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+              </svg>
+            )}
+          </button>
         </div>
 
         {step === 'credentials' ? (
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
-            <h1 className="text-xl font-semibold text-white mb-1">Create account</h1>
-            <p className="text-gray-400 text-sm mb-6">
+          <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-xl dark:shadow-2xl">
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Create account</h1>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
               Your encryption keys are generated locally and never leave your device unencrypted.
             </p>
 
             <form onSubmit={handleCredentialsSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Email</label>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">Email</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
+                  className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white text-sm placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
                   placeholder="you@example.com"
                   required
                   autoFocus
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Password</label>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">Password</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
+                  className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white text-sm placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
                   placeholder="Min. 8 characters"
                   required
                   minLength={8}
@@ -149,7 +167,7 @@ export default function RegisterPage() {
               </div>
 
               {error && (
-                <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                <div className="flex items-center gap-2 text-red-500 dark:text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
                   <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
                   </svg>
@@ -166,7 +184,7 @@ export default function RegisterPage() {
             </form>
           </div>
         ) : (
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
+          <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-xl dark:shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
                 <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -174,13 +192,13 @@ export default function RegisterPage() {
                 </svg>
               </div>
               <div>
-                <h1 className="text-lg font-semibold text-white">Save your recovery phrase</h1>
-                <p className="text-xs text-amber-400/80">Required — read carefully</p>
+                <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Save your recovery phrase</h1>
+                <p className="text-xs text-amber-500 dark:text-amber-400/80">Required — read carefully</p>
               </div>
             </div>
 
             <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 mb-5">
-              <p className="text-amber-300/90 text-xs leading-relaxed">
+              <p className="text-amber-700 dark:text-amber-300/90 text-xs leading-relaxed">
                 This 12-word phrase is the <strong>only way</strong> to recover your account if you forget your password.
                 We cannot recover it for you. If you lose both your password and this phrase, <strong>your data is permanently inaccessible.</strong>
               </p>
@@ -195,31 +213,19 @@ export default function RegisterPage() {
             <div className="flex gap-2 mb-5">
               <button
                 onClick={handleCopy}
-                className="flex-1 flex items-center justify-center gap-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 py-2 rounded-lg text-xs font-medium transition-colors"
+                className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-xs font-medium transition-colors"
               >
                 {copied ? (
-                  <>
-                    <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-green-400">Copied</span>
-                  </>
+                  <><svg className="w-3.5 h-3.5 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg><span className="text-green-500 dark:text-green-400">Copied</span></>
                 ) : (
-                  <>
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    Copy
-                  </>
+                  <><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>Copy</>
                 )}
               </button>
               <button
                 onClick={handleDownload}
-                className="flex-1 flex items-center justify-center gap-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 py-2 rounded-lg text-xs font-medium transition-colors"
+                className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-xs font-medium transition-colors"
               >
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                 Download
               </button>
             </div>
@@ -229,15 +235,15 @@ export default function RegisterPage() {
                 type="checkbox"
                 checked={confirmed}
                 onChange={(e) => setConfirmed(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded border-gray-600 bg-gray-800 text-indigo-500 focus:ring-indigo-500/50 flex-shrink-0"
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-indigo-500 focus:ring-indigo-500/50 flex-shrink-0"
               />
-              <span className="text-gray-400 text-xs leading-relaxed">
+              <span className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
                 I have saved my recovery phrase in a safe place and understand that losing it means losing access to my account if I forget my password.
               </span>
             </label>
 
             {error && (
-              <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 mb-4">
+              <div className="flex items-center gap-2 text-red-500 dark:text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 mb-4">
                 <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
                 </svg>
@@ -249,7 +255,7 @@ export default function RegisterPage() {
               <button
                 onClick={() => setStep('credentials')}
                 disabled={isLoading}
-                className="px-4 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 text-gray-300 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                className="px-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-300 py-2.5 rounded-xl text-sm font-medium transition-colors"
               >
                 Back
               </button>
@@ -274,7 +280,7 @@ export default function RegisterPage() {
 
         <p className="mt-5 text-center text-gray-500 text-sm">
           Already have an account?{' '}
-          <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+          <Link href="/login" className="text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 font-medium transition-colors">
             Sign in
           </Link>
         </p>
