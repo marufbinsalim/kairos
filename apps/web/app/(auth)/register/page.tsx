@@ -14,6 +14,7 @@ import {
 } from '@/lib/crypto/keypair';
 import { DeviceType } from '@kairos/types';
 import { useTheme } from '@/components/ThemeProvider';
+import { KairosLogo } from '@/components/KairosLogo';
 import Link from 'next/link';
 
 type Step = 'credentials' | 'mnemonic';
@@ -112,9 +113,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
-              <span className="text-indigo-500 dark:text-indigo-400 font-bold">K</span>
-            </div>
+            <KairosLogo size={32} />
             <span className="text-gray-900 dark:text-white font-semibold text-lg tracking-tight">kairos</span>
           </div>
           <button

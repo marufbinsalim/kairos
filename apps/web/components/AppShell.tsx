@@ -6,6 +6,7 @@ import { clearCrypto } from '@/lib/store/cryptoSlice';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useTheme } from './ThemeProvider';
+import { KairosLogo } from './KairosLogo';
 
 const NAV = [
   { href: '/dashboard', label: 'Projects', icon: (
@@ -59,9 +60,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Brand */}
       <div className="px-5 h-14 flex items-center border-b border-gray-200 dark:border-gray-800/60 flex-shrink-0">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
-            <span className="text-indigo-500 dark:text-indigo-400 text-sm font-bold tracking-tight">K</span>
-          </div>
+          <KairosLogo size={28} />
           <span className="font-semibold text-gray-900 dark:text-white text-sm tracking-tight">kairos</span>
         </div>
       </div>
@@ -154,9 +153,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </svg>
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
-              <span className="text-indigo-500 dark:text-indigo-400 text-xs font-bold">K</span>
-            </div>
+            <KairosLogo size={24} />
             <span className="font-semibold text-gray-900 dark:text-white text-sm tracking-tight">kairos</span>
           </div>
           <button

@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/components/ThemeProvider';
+import { KairosLogo } from '@/components/KairosLogo';
 
 const REPO = 'marufbinsalim/kairos';
 const BASE = `https://github.com/${REPO}/releases/latest/download`;
@@ -106,9 +107,7 @@ export default function DocsPage() {
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
-                <span className="text-indigo-400 font-bold text-sm">K</span>
-              </div>
+              <KairosLogo size={28} />
               <span className="text-gray-900 dark:text-white font-semibold tracking-tight">kairos</span>
             </Link>
             <span className="text-gray-700">/</span>

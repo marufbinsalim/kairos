@@ -1,7 +1,9 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTheme } from '@/components/ThemeProvider';
+import { KairosLogo } from '@/components/KairosLogo';
 
 const REPO = 'marufbinsalim/kairos';
 
@@ -46,9 +48,7 @@ export default function LandingPage() {
       <nav className="border-b border-gray-200 dark:border-gray-900 px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
-              <span className="text-indigo-400 font-bold text-sm">K</span>
-            </div>
+            <KairosLogo size={28} />
             <span className="text-gray-900 dark:text-white font-semibold tracking-tight">kairos</span>
           </div>
           <div className="flex items-center gap-4">
@@ -73,24 +73,40 @@ export default function LandingPage() {
       <div className="max-w-5xl mx-auto px-6">
 
         {/* Hero */}
-        <section className="py-20 md:py-24 text-center">
-          <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-4 py-1.5 text-xs text-indigo-400 mb-8">
-            E2EE secrets manager
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-            Secrets your team can share.<br />
-            <span className="text-indigo-400">Keys only you hold.</span>
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto mb-10">
-            Kairos encrypts secrets end-to-end on your device. The server never sees plaintext. Pull secrets into any environment with a single CLI command.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/register" className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-center">
-              Get started free
-            </Link>
-            <a href="#install" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium px-6 py-3 w-full sm:w-auto text-center">
-              Install CLI →
-            </a>
+        <section className="py-16 md:py-24">
+          <div className="flex flex-col md:flex-row items-center gap-12 md:gap-16">
+            {/* Text */}
+            <div className="flex-1 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-4 py-1.5 text-xs text-indigo-400 mb-8">
+                E2EE secrets manager
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+                Secrets your team can share.<br />
+                <span className="text-indigo-400">Keys only you hold.</span>
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 text-lg mb-10 md:max-w-lg">
+                Kairos encrypts secrets end-to-end on your device. The server never sees plaintext. Pull secrets into any environment with a single CLI command.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
+                <Link href="/register" className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-center">
+                  Get started free
+                </Link>
+                <a href="#install" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium px-6 py-3 w-full sm:w-auto text-center">
+                  Install CLI →
+                </a>
+              </div>
+            </div>
+            {/* Illustration */}
+            <div className="flex-1 flex justify-center md:justify-end">
+              <Image
+                src="/hero-illustration.jpg"
+                alt="Kairos security illustration"
+                width={480}
+                height={400}
+                className="w-full max-w-sm md:max-w-md object-contain"
+                priority
+              />
+            </div>
           </div>
         </section>
 
