@@ -3,8 +3,34 @@ import './globals.css';
 import { Providers } from '@/components/providers';
 
 export const metadata: Metadata = {
-  title: 'Kairos — Secrets Manager',
-  description: 'End-to-end encrypted secrets management',
+  metadataBase: new URL('https://kairoscli.vercel.app'),
+  title: {
+    default: 'Kairos — E2EE Secrets Manager',
+    template: '%s | Kairos',
+  },
+  description: 'End-to-end encrypted secrets manager. Secrets are encrypted on your device — the server never sees plaintext. Pull env vars into any environment with one CLI command.',
+  keywords: ['secrets manager', 'e2ee', 'end-to-end encryption', 'devops', 'cli', 'environment variables', 'dotenv', 'vault'],
+  authors: [{ name: 'Kairos' }],
+  creator: 'Kairos',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://kairoscli.vercel.app',
+    siteName: 'Kairos',
+    title: 'Kairos — E2EE Secrets Manager',
+    description: 'Secrets are encrypted on your device — the server never sees plaintext. Pull env vars into any environment with one CLI command.',
+    images: [{ url: '/kairos-logo.svg', width: 512, height: 512, alt: 'Kairos' }],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Kairos — E2EE Secrets Manager',
+    description: 'Secrets are encrypted on your device — the server never sees plaintext. Pull env vars into any environment with one CLI command.',
+    images: ['/kairos-logo.svg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
