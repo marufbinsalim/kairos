@@ -1,7 +1,8 @@
-import { loadAuth, loadConfig } from './config';
+import { loadAuth } from './config';
+
+const API_BASE = 'https://kairoscli-api.onrender.com';
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const config = loadConfig();
   const auth = loadAuth();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -10,7 +11,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   if (auth?.accessToken) headers['Authorization'] = `Bearer ${auth.accessToken}`;
   headers['ngrok-skip-browser-warning'] = 'true';
 
-  const res = await fetch(`${config.apiUrl}/api${path}`, { ...options, headers });
+  const res = await fetch(`${API_BASE}/api${path}`, { ...options, headers });
   if (!res.ok) {
     const body = await res.text().catch(() => '');
     throw new Error(`API error ${res.status}: ${body}`);

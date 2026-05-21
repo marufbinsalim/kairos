@@ -29,7 +29,7 @@ export default class Run extends BaseCommand {
 
     if (token) {
       const config = loadConfig();
-      const result = await fetch(`${config.apiUrl}/api/deploy-tokens/export`, {
+      const result = await fetch(`https://kairoscli-api.onrender.com/api/deploy-tokens/export`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token }),
