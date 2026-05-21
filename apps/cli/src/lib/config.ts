@@ -31,7 +31,7 @@ interface AuthData {
 }
 
 export function loadConfig(): KairosConfig {
-  if (!existsSync(CONFIG_PATH)) return { apiUrl: 'https://kairos-api-chi.vercel.app' };
+  if (!existsSync(CONFIG_PATH)) return { apiUrl: 'https://kairoscli-api.vercel.app' };
   return JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
 }
 
