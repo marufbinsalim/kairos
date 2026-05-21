@@ -6,13 +6,13 @@
     </linearGradient>
   </defs>
 
-  <rect width="512" height="512" rx="120" fill="#0B1020"/>
+  <rect width="512" height="512" rx="120" fill="#f3f4f6"/>
 
   <path
     d="M256 72L384 128V224C384 319.2 327.2 403.2 256 440C184.8 403.2 128 319.2 128 224V128L256 72Z"
     stroke="url(#kairosGradient)"
     stroke-width="24"
-    fill="rgba(255,255,255,0.02)"
+    fill="rgba(0,0,0,0.02)"
   />
 
   <path
