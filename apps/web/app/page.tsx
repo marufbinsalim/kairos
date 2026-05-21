@@ -74,7 +74,7 @@ export default function LandingPage() {
 
         {/* Hero */}
         <section className="py-16 md:py-24">
-          <div className="flex flex-col md:flex-row items-center gap-12 md:gap-16">
+          <div className="flex flex-col-reverse md:flex-row items-center gap-12 md:gap-16">
             {/* Text */}
             <div className="flex-1 text-center md:text-left">
               <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-4 py-1.5 text-xs text-indigo-400 mb-8">
@@ -103,7 +103,7 @@ export default function LandingPage() {
                 alt="Kairos security illustration"
                 width={480}
                 height={400}
-                className="w-full max-w-sm md:max-w-md object-contain"
+                className="w-full max-w-sm md:max-w-md object-contain rounded-lg"
                 priority
               />
             </div>
@@ -176,6 +176,24 @@ kairos secrets -t $KAIROS_TOKEN -g .env`}</pre>
         {/* CTA */}
         <section className="pb-24 text-center">
           <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 md:p-12">
+            {/* Icons row */}
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+              </div>
+              <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+              </div>
+              <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                </svg>
+              </div>
+            </div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Ready to start?</h2>
             <p className="text-gray-600 dark:text-gray-400 mb-8">Create an account, add your secrets, and pull them anywhere.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
