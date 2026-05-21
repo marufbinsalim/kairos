@@ -1,7 +1,10 @@
-import { Controller, Post, Get, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Patch, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { IsString, MinLength } from 'class-validator';
+
+class RenameProjectDto { @IsString() @MinLength(1) name: string; }
 
 @Controller('projects')
 @UseGuards(JwtAuthGuard)
@@ -21,5 +24,10 @@ export class ProjectsController {
   @Delete(':id')
   remove(@Request() req: any, @Param('id') id: string) {
     return this.projectsService.remove(req.user.id, id);
+  }
+
+  @Patch(':id')
+  rename(@Request() req: any, @Param('id') id: string, @Body() dto: RenameProjectDto) {
+    return this.projectsService.rename(req.user.id, id, dto.name);
   }
 }

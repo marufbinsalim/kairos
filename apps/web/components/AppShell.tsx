@@ -5,6 +5,7 @@ import { selectAuth, clearAuth } from '@/lib/store/authSlice';
 import { clearCrypto } from '@/lib/store/cryptoSlice';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { useTheme } from './ThemeProvider';
 
 const NAV = [
   { href: '/dashboard', label: 'Projects', icon: (
@@ -29,15 +30,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch();
   const router = useRouter();
   const pathname = usePathname();
+  const { theme, toggle } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (mounted && !accessToken) router.push('/login');
-  }, [mounted, accessToken, router]);
+  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { if (mounted && !accessToken) router.push('/login'); }, [mounted, accessToken, router]);
+  useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
   if (!mounted || !accessToken) return null;
 
@@ -50,64 +49,131 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     router.push('/login');
   }
 
-  return (
-    <div className="flex h-screen bg-gray-950 overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-[220px] flex-shrink-0 flex flex-col bg-gray-950 border-r border-gray-800/60">
-        {/* Brand */}
-        <div className="px-5 h-14 flex items-center border-b border-gray-800/60">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
-              <span className="text-indigo-400 text-sm font-bold tracking-tight">K</span>
-            </div>
-            <span className="font-semibold text-white text-sm tracking-tight">kairos</span>
+  const SidebarContent = () => (
+    <>
+      {/* Brand */}
+      <div className="px-5 h-14 flex items-center border-b border-gray-200 dark:border-gray-800/60 flex-shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
+            <span className="text-indigo-500 dark:text-indigo-400 text-sm font-bold tracking-tight">K</span>
           </div>
+          <span className="font-semibold text-gray-900 dark:text-white text-sm tracking-tight">kairos</span>
         </div>
+      </div>
 
-        {/* Nav */}
-        <nav className="flex-1 px-3 py-3 space-y-0.5">
-          {NAV.map((item) => {
-            const active = pathname === item.href || (item.href !== '/dashboard' && pathname?.startsWith(item.href));
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  active
-                    ? 'bg-indigo-500/10 text-indigo-300 ring-1 ring-indigo-500/20'
-                    : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/60'
-                }`}
-              >
-                <span className={active ? 'text-indigo-400' : 'text-gray-500'}>{item.icon}</span>
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+      {/* Nav */}
+      <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
+        {NAV.map((item) => {
+          const active = pathname === item.href || (item.href !== '/dashboard' && pathname?.startsWith(item.href));
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                active
+                  ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 ring-1 ring-indigo-500/20'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800/60'
+              }`}
+            >
+              <span className={active ? 'text-indigo-500 dark:text-indigo-400' : 'text-gray-400 dark:text-gray-500'}>{item.icon}</span>
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
 
-        {/* User */}
-        <div className="px-3 py-3 border-t border-gray-800/60 space-y-0.5">
-          {email && (
-            <div className="px-3 py-1.5">
-              <p className="text-xs text-gray-500 truncate">{email}</p>
-            </div>
-          )}
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-gray-200 hover:bg-gray-800/60 transition-colors"
-          >
-            <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+      {/* Footer: theme toggle + user + logout */}
+      <div className="px-3 py-3 border-t border-gray-200 dark:border-gray-800/60 space-y-0.5 flex-shrink-0">
+        {/* Theme toggle */}
+        <button
+          onClick={toggle}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800/60 transition-colors"
+        >
+          {theme === 'dark' ? (
+            <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
             </svg>
-            Sign out
-          </button>
-        </div>
+          ) : (
+            <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+            </svg>
+          )}
+          {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+        </button>
+
+        {email && (
+          <div className="px-3 py-1.5">
+            <p className="text-xs text-gray-500 truncate">{email}</p>
+          </div>
+        )}
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800/60 transition-colors"
+        >
+          <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+          </svg>
+          Sign out
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden">
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex w-[220px] flex-shrink-0 flex-col bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800/60">
+        <SidebarContent />
       </aside>
 
-      {/* Main */}
-      <main className="flex-1 overflow-y-auto min-h-0">
-        {children}
-      </main>
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-40 md:hidden">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+          <aside className="absolute left-0 top-0 bottom-0 w-[220px] flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-50">
+            <SidebarContent />
+          </aside>
+        </div>
+      )}
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col min-h-0 min-w-0">
+        {/* Mobile top bar */}
+        <div className="md:hidden flex items-center justify-between px-4 h-14 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800/60 flex-shrink-0">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
+              <span className="text-indigo-500 dark:text-indigo-400 text-xs font-bold">K</span>
+            </div>
+            <span className="font-semibold text-gray-900 dark:text-white text-sm tracking-tight">kairos</span>
+          </div>
+          <button
+            onClick={toggle}
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            {theme === 'dark' ? (
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+              </svg>
+            )}
+          </button>
+        </div>
+
+        <main className="flex-1 overflow-y-auto min-h-0">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

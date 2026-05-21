@@ -37,13 +37,32 @@ async function syncLocalState() {
     }
 
     if (config.defaultEnvironmentId) {
-      const envs = await api.get<Array<{ id: string }>>('/environments');
-      const envSet = new Set(envs.map((e) => e.id));
-      if (!envSet.has(config.defaultEnvironmentId)) {
+      const envs = await api.get<Array<{ id: string; name: string; projectId: string }>>('/environments');
+      const env = envs.find((e) => e.id === config.defaultEnvironmentId);
+      if (!env) {
         changed = true;
         updates.defaultEnvironmentId = undefined;
         updates.defaultEnvName = undefined;
         updates.defaultProjectName = undefined;
+        updates.defaultProjectId = undefined;
+      } else {
+        // sync names in case they were renamed
+        if (env.name !== config.defaultEnvName) {
+          changed = true;
+          updates.defaultEnvName = env.name;
+        }
+        if (env.projectId !== config.defaultProjectId) {
+          changed = true;
+          updates.defaultProjectId = env.projectId;
+        }
+        if (config.defaultProjectId || env.projectId) {
+          const projects = await api.get<Array<{ id: string; name: string }>>('/projects');
+          const project = projects.find((p) => p.id === (env.projectId ?? config.defaultProjectId));
+          if (project && project.name !== config.defaultProjectName) {
+            changed = true;
+            updates.defaultProjectName = project.name;
+          }
+        }
       }
     }
 

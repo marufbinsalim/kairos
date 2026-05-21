@@ -59,4 +59,13 @@ export class EnvironmentsService {
     const projectMap = new Map(projects.map((p) => [p.id, p.name]));
     return envs.map((e) => ({ ...e, projectName: projectMap.get(e.projectId) ?? '' }));
   }
+
+  async rename(userId: string, projectId: string, envId: string, name: string) {
+    const project = await this.projectRepo.findOne({ where: { id: projectId, userId } });
+    if (!project) throw new NotFoundException('Project not found');
+    const env = await this.envRepo.findOne({ where: { id: envId, projectId } });
+    if (!env) throw new NotFoundException('Environment not found');
+    env.name = name;
+    return this.envRepo.save(env);
+  }
 }

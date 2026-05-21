@@ -45,4 +45,11 @@ export class ProjectsService {
     await this.projectRepo.remove(project);
     return { success: true };
   }
+
+  async rename(userId: string, projectId: string, name: string) {
+    const project = await this.projectRepo.findOne({ where: { id: projectId, userId } });
+    if (!project) throw new NotFoundException('Project not found');
+    project.name = name;
+    return this.projectRepo.save(project);
+  }
 }

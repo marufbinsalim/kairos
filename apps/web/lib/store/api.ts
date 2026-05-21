@@ -6,6 +6,7 @@ import type {
   UpsertSecretArgs,
   ChangePasswordArgs, UpdateMnemonicArgs, RecoveryInitResponse, ResetWithMnemonicArgs,
   DeployToken, CreateDeployTokenArgs,
+  RenameProjectArgs, RenameEnvironmentArgs,
 } from '@kairos/types';
 
 export const api = createApi({
@@ -136,6 +137,14 @@ export const api = createApi({
       query: (id) => ({ url: `/deploy-tokens/${id}`, method: 'DELETE' }),
       invalidatesTags: ['DeployToken'],
     }),
+    renameProject: build.mutation<Project, RenameProjectArgs>({
+      query: ({ id, name }) => ({ url: `/projects/${id}`, method: 'PATCH', body: { name } }),
+      invalidatesTags: ['Project', 'Environment'],
+    }),
+    renameEnvironment: build.mutation<Environment, RenameEnvironmentArgs>({
+      query: ({ projectId, envId, name }) => ({ url: `/projects/${projectId}/environments/${envId}`, method: 'PATCH', body: { name } }),
+      invalidatesTags: ['Environment'],
+    }),
   }),
 });
 
@@ -152,4 +161,5 @@ export const {
   useRecoveryInitMutation, useResetWithMnemonicMutation,
   useGetDeployTokenQuery, useCreateDeployTokenMutation,
   useRevokeDeployTokenMutation,
+  useRenameProjectMutation, useRenameEnvironmentMutation,
 } = api;

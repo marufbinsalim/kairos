@@ -146,3 +146,6 @@ export interface DeployExportPayload {
   secrets: Array<{ key: string; encryptedValue: string; iv: string }>;
 }
 
+export interface RenameProjectArgs { id: string; name: string; }
+export interface RenameEnvironmentArgs { projectId: string; envId: string; name: string; }
+
