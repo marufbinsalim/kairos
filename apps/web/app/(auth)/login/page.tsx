@@ -2,35 +2,35 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
-import { useLoginMutation } from '@/lib/store/api';
+import { useLoginMutation, useRegisterDeviceMutation } from '@/lib/store/api';
 import { setAuth } from '@/lib/store/authSlice';
 import { setKeypair, setDeviceId } from '@/lib/store/cryptoSlice';
 import { decryptPrivateKeyWithPassword, bytesToBase64 } from '@/lib/crypto/keypair';
 import { x25519 } from '@noble/curves/ed25519';
+import { DeviceType } from '@kairos/types';
 import Link from 'next/link';
-
-const API = process.env.NEXT_PUBLIC_API_URL;
-async function apiFetch<T>(path: string, token: string): Promise<T> {
-  const res = await fetch(`${API}/api${path}`, {
-    headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
-  });
-  if (!res.ok) throw new Error(`${res.status}`);
-  return res.json();
-}
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [login, { isLoading }] = useLoginMutation();
+  const [registerDevice] = useRegisterDeviceMutation();
   const dispatch = useDispatch();
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+    let result: import('@kairos/types').AuthResponse;
     try {
-      const result = await login({ email, password }).unwrap();
+      result = await login({ email, password }).unwrap();
+    } catch {
+      setError('Invalid email or password');
+      return;
+    }
+
+    try {
       dispatch(setAuth({ accessToken: result.accessToken, userId: result.userId, email }));
 
       if (result.encryptedPrivateKey) {
@@ -39,14 +39,19 @@ export default function LoginPage() {
         sessionStorage.setItem('kairos_privkey', bytesToBase64(privateKey));
         dispatch(setKeypair({ privateKey, publicKey }));
 
-        const devices = await apiFetch<Array<{ id: string; status: string }>>('/devices', result.accessToken);
-        const device = devices.find((d) => d.status === 'active') ?? devices.find((d) => d.status === 'pending');
-        if (device) dispatch(setDeviceId(device.id));
+        const webDevice = await registerDevice({
+          publicKey: bytesToBase64(publicKey),
+          type: DeviceType.web,
+          label: `Web — ${navigator.userAgent.slice(0, 40)}`,
+        }).unwrap();
+        sessionStorage.setItem('kairos_deviceId', webDevice.deviceId);
+        dispatch(setDeviceId(webDevice.deviceId));
       }
 
       router.push('/dashboard');
-    } catch {
-      setError('Invalid email or password');
+    } catch (err) {
+      console.error('Post-login crypto/setup error:', err);
+      setError('Login succeeded but key setup failed. Try clearing site data and logging in again.');
     }
   }
 
@@ -72,7 +77,12 @@ export default function LoginPage() {
                 placeholder="you@example.com" required autoFocus />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Password</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">Password</label>
+                <Link href="/reset-password" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                  Forgot password?
+                </Link>
+              </div>
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
                 placeholder="••••••••" required />

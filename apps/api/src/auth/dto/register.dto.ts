@@ -14,5 +14,9 @@ export class RegisterDto {
 
   @IsOptional()
   @IsString()
+  mnemonicEncryptedPrivateKey?: string;
+
+  @IsOptional()
+  @IsString()
   publicKey?: string;
 }

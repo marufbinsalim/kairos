@@ -4,6 +4,7 @@ import type {
   AuthResponse, Device, Project, Environment, Secret, SyncPayload,
   RegisterDeviceArgs, DeviceResponse, CompleteRegArgs, ApprovalArgs,
   UpsertSecretArgs,
+  ChangePasswordArgs, UpdateMnemonicArgs, RecoveryInitResponse, ResetWithMnemonicArgs,
 } from '@kairos/types';
 
 export const api = createApi({
@@ -19,7 +20,7 @@ export const api = createApi({
   }),
   tagTypes: ['Device', 'Project', 'Environment', 'Secret'],
   endpoints: (build) => ({
-    register: build.mutation<AuthResponse, { email: string; password: string; encryptedPrivateKey?: string; publicKey?: string }>({
+    register: build.mutation<AuthResponse, { email: string; password: string; encryptedPrivateKey?: string; mnemonicEncryptedPrivateKey?: string; publicKey?: string }>({
       query: (body) => ({ url: '/auth/register', method: 'POST', body }),
     }),
     login: build.mutation<AuthResponse, { email: string; password: string }>({
@@ -110,6 +111,18 @@ export const api = createApi({
       query: ({ environmentId, deviceId }) =>
         `/sync/${environmentId}?deviceId=${deviceId}`,
     }),
+    changePassword: build.mutation<{ message: string }, ChangePasswordArgs>({
+      query: (body) => ({ url: '/auth/change-password', method: 'PATCH', body }),
+    }),
+    updateMnemonic: build.mutation<{ message: string }, UpdateMnemonicArgs>({
+      query: (body) => ({ url: '/auth/update-mnemonic', method: 'PATCH', body }),
+    }),
+    recoveryInit: build.mutation<RecoveryInitResponse, { email: string }>({
+      query: (body) => ({ url: '/auth/recovery-init', method: 'POST', body }),
+    }),
+    resetWithMnemonic: build.mutation<{ message: string }, ResetWithMnemonicArgs>({
+      query: (body) => ({ url: '/auth/reset-with-mnemonic', method: 'POST', body }),
+    }),
   }),
 });
 
@@ -122,4 +135,6 @@ export const {
   useCreateEnvironmentMutation, useListEnvironmentsQuery, useListAllEnvironmentsQuery, useDeleteEnvironmentMutation,
   useListSecretsQuery, useUpsertSecretMutation, useDeleteSecretMutation,
   useSyncEnvironmentQuery,
+  useChangePasswordMutation, useUpdateMnemonicMutation,
+  useRecoveryInitMutation, useResetWithMnemonicMutation,
 } = api;

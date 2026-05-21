@@ -1,4 +1,25 @@
 import { x25519 } from '@noble/curves/ed25519';
+import * as bip39 from 'bip39';
+
+export function generateRecoveryMnemonic(): string {
+  return bip39.generateMnemonic();
+}
+
+function normalizeMnemonic(mnemonic: string): string {
+  return mnemonic.trim().toLowerCase().split(/\s+/).join(' ');
+}
+
+export function validateMnemonic(mnemonic: string): boolean {
+  return bip39.validateMnemonic(normalizeMnemonic(mnemonic));
+}
+
+export async function wrapPrivateKeyWithMnemonic(privateKey: Uint8Array, mnemonic: string): Promise<string> {
+  return encryptPrivateKeyWithPassword(privateKey, normalizeMnemonic(mnemonic));
+}
+
+export async function unwrapPrivateKeyWithMnemonic(blob: string, mnemonic: string): Promise<Uint8Array> {
+  return decryptPrivateKeyWithPassword(blob, normalizeMnemonic(mnemonic));
+}
 
 export function generateKeypair(): { privateKey: Uint8Array; publicKey: Uint8Array } {
   const privateKey = x25519.utils.randomPrivateKey();

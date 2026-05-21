@@ -19,6 +19,9 @@ export class User {
   encryptedPrivateKey: string | null;
 
   @Column({ type: 'text', nullable: true })
+  mnemonicEncryptedPrivateKey: string | null;
+
+  @Column({ type: 'text', nullable: true })
   publicKey: string | null;
 
   @CreateDateColumn()

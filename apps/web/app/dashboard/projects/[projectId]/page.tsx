@@ -132,7 +132,21 @@ function NewEnvironmentModal({
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) return;
-    if (!privateKey || !deviceId) {
+    if (!deviceId) {
+      setError('Device not registered — please re-login.');
+      return;
+    }
+    let resolvedKey: Uint8Array | null = privateKey
+      ? (privateKey instanceof Uint8Array ? privateKey : new Uint8Array(Object.values(privateKey as Record<string, number>)))
+      : null;
+    if (!resolvedKey) {
+      const stored = sessionStorage.getItem('kairos_privkey');
+      if (stored) {
+        const { base64ToBytes } = await import('@/lib/crypto/keypair');
+        resolvedKey = base64ToBytes(stored);
+      }
+    }
+    if (!resolvedKey) {
       setError('Crypto keys not loaded — please re-login.');
       return;
     }
@@ -141,7 +155,7 @@ function NewEnvironmentModal({
     try {
       const env = await createEnvironment({ projectId, name: trimmed }).unwrap();
       const dek = generateDEK();
-      const wrappedDEK = await selfWrapDEK(privateKey, dek);
+      const wrappedDEK = await selfWrapDEK(resolvedKey, dek);
       await completeRegistration({ deviceId, environmentId: env.id, wrappedDEK }).unwrap();
       dispatch(setDEK(dek));
       onClose();

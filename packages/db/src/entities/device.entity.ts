@@ -1,6 +1,6 @@
 import {
   Entity, PrimaryGeneratedColumn, Column, CreateDateColumn,
-  ManyToOne, OneToMany, JoinColumn,
+  ManyToOne, OneToMany, JoinColumn, Index,
 } from 'typeorm';
 import { User } from './user.entity';
 import { WrappedDEK } from './wrapped-dek.entity';
@@ -18,6 +18,7 @@ export enum DeviceStatus {
 }
 
 @Entity('devices')
+@Index('UQ_WEB_DEVICE_PER_USER', ['userId'], { unique: true, where: `"type" = 'web'` })
 export class Device {
   @PrimaryGeneratedColumn('uuid')
   id: string;

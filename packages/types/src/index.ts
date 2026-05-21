@@ -109,3 +109,23 @@ export interface UpsertSecretArgs {
   iv: string;
 }
 
+export interface ChangePasswordArgs {
+  currentPassword: string;
+  newPassword: string;
+  newEncryptedPrivateKey: string;
+}
+
+export interface UpdateMnemonicArgs {
+  mnemonicEncryptedPrivateKey: string;
+}
+
+export interface RecoveryInitResponse {
+  mnemonicEncryptedPrivateKey: string | null;
+}
+
+export interface ResetWithMnemonicArgs {
+  email: string;
+  newPassword: string;
+  newEncryptedPrivateKey: string;
+}
+

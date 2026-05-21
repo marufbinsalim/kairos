@@ -14,7 +14,7 @@ import { SyncModule } from './sync/sync.module';
       type: 'postgres',
       url: process.env.DATABASE_URL,
       entities: [User, Device, Project, Environment, WrappedDEK, Secret],
-      synchronize: false,
+      synchronize: true,
       logging: process.env.NODE_ENV === 'development',
     }),
     AuthModule,

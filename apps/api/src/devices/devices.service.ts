@@ -3,7 +3,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
-import { Device, DeviceStatus, WrappedDEK, Environment } from '@kairos/db';
+import { Device, DeviceStatus, DeviceType, WrappedDEK, Environment } from '@kairos/db';
 import { RegisterDeviceDto } from './dto/register-device.dto';
 import { CompleteRegistrationDto } from './dto/complete-registration.dto';
 import { CompleteApprovalDto } from './dto/complete-approval.dto';
@@ -20,6 +20,34 @@ export class DevicesService {
   ) {}
 
   async registerDevice(userId: string, dto: RegisterDeviceDto) {
+    if (dto.type === DeviceType.web) {
+      const existing = await this.deviceRepo.findOne({ where: { userId, type: DeviceType.web } });
+      if (existing) {
+        if (existing.publicKey !== dto.publicKey) {
+          existing.publicKey = dto.publicKey;
+          await this.deviceRepo.save(existing);
+        }
+        return { deviceId: existing.id, status: existing.status };
+      }
+
+      const device = this.deviceRepo.create({
+        userId,
+        publicKey: dto.publicKey,
+        type: DeviceType.web,
+        label: dto.label ?? null,
+        status: DeviceStatus.active,
+        requestedEnvironmentIds: [],
+      });
+      try {
+        await this.deviceRepo.save(device);
+      } catch {
+        // Unique constraint hit (concurrent login) — return the existing one
+        const existing = await this.deviceRepo.findOne({ where: { userId, type: DeviceType.web } });
+        return { deviceId: existing!.id, status: existing!.status };
+      }
+      return { deviceId: device.id, status: device.status };
+    }
+
     const device = this.deviceRepo.create({
       userId,
       publicKey: dto.publicKey,

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectAuth, clearAuth } from '@/lib/store/authSlice';
 import { clearCrypto } from '@/lib/store/cryptoSlice';
@@ -17,6 +17,11 @@ const NAV = [
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3" />
     </svg>
   )},
+  { href: '/account', label: 'Account', icon: (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+    </svg>
+  )},
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -24,15 +29,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch();
   const router = useRouter();
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!accessToken) router.push('/login');
-  }, [accessToken, router]);
+    setMounted(true);
+  }, []);
 
-  if (!accessToken) return null;
+  useEffect(() => {
+    if (mounted && !accessToken) router.push('/login');
+  }, [mounted, accessToken, router]);
+
+  if (!mounted || !accessToken) return null;
 
   function handleLogout() {
+    const deviceId = sessionStorage.getItem('kairos_deviceId');
     sessionStorage.clear();
+    if (deviceId) sessionStorage.setItem('kairos_deviceId', deviceId);
     dispatch(clearAuth());
     dispatch(clearCrypto());
     router.push('/login');
