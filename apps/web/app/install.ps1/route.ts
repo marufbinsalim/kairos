@@ -4,32 +4,47 @@ const REPO = 'marufbinsalim/kairos';
 
 const SCRIPT = `$ErrorActionPreference = 'Stop'
 
-$version = (Invoke-RestMethod "https://api.github.com/repos/${REPO}/releases/latest").tag_name
+$latest = (Invoke-RestMethod "https://api.github.com/repos/${REPO}/releases/latest").tag_name
 
-if (-not $version) {
+if (-not $latest) {
   Write-Error "Failed to fetch latest version"
   exit 1
 }
 
-$url = "https://github.com/${REPO}/releases/download/$version/kairos-win32-x64.tar.gz"
-$tmp = Join-Path $env:TEMP "kairos.tar.gz"
-$dest = Join-Path $env:LOCALAPPDATA "kairos"
-
-Write-Host "Installing kairos $version..."
-
-Invoke-WebRequest -Uri $url -OutFile $tmp
-New-Item -ItemType Directory -Force -Path $dest | Out-Null
-tar -xzf $tmp -C $dest --strip-components=1
-Remove-Item $tmp
-
-$currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
-if ($currentPath -notlike "*$dest\\bin*") {
-  [Environment]::SetEnvironmentVariable("PATH", "$currentPath;$dest\\bin", "User")
-  Write-Host "Added kairos to PATH (restart your terminal)"
+$current = ""
+if (Get-Command kairos -ErrorAction SilentlyContinue) {
+  $current = (kairos --version 2>$null) -replace '.*?(v[\\d.]+).*', '$1'
 }
 
-Write-Host "kairos $version installed successfully"
-Write-Host "Run 'kairos --help' to get started"
+if ($current -eq $latest) {
+  Write-Host "kairos $latest is already installed and up to date"
+  exit 0
+}
+
+if ($current) {
+  Write-Host "Updating kairos $current -> $latest..."
+} else {
+  Write-Host "Installing kairos $latest..."
+}
+
+$url = "https://github.com/${REPO}/releases/download/$latest/kairos-win32-x64.tar.gz"
+$tmp = Join-Path $env:TEMP "kairos.tar.gz"
+$installDir = Join-Path $env:LOCALAPPDATA "kairos"
+
+Invoke-WebRequest -Uri $url -OutFile $tmp -UseBasicParsing
+Remove-Item $installDir -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force -Path $installDir | Out-Null
+tar -xzf $tmp -C $installDir --strip-components=1
+Remove-Item $tmp
+
+$binDir = Join-Path $installDir "bin"
+$currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
+if ($currentPath -notlike "*$binDir*") {
+  [Environment]::SetEnvironmentVariable("PATH", "$currentPath;$binDir", "User")
+  Write-Host "Added kairos to PATH — restart your terminal to use it"
+}
+
+Write-Host "kairos $latest installed. Run 'kairos --help' to get started"
 `;
 
 export async function GET() {

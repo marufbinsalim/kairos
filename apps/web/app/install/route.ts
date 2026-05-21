@@ -43,9 +43,23 @@ else
   echo "Installing kairos \${LATEST} (\${OS}-\${ARCH})..."
 fi
 
-curl -sL "\$URL" | tar xz -C /usr/local/bin --strip-components=1
+INSTALL_DIR="\${HOME}/.local/share/kairos"
+BIN_DIR="\${HOME}/.local/bin"
 
-echo "Done. Run 'kairos --help' to get started"
+mkdir -p "\$INSTALL_DIR" "\$BIN_DIR"
+curl -sL "\$URL" | tar xz -C "\$INSTALL_DIR" --strip-components=1
+ln -sf "\$INSTALL_DIR/bin/kairos" "\$BIN_DIR/kairos"
+
+# Add to PATH if needed
+if ! echo "\$PATH" | grep -q "\$BIN_DIR"; then
+  SHELL_RC="\${HOME}/.bashrc"
+  [ -f "\${HOME}/.zshrc" ] && SHELL_RC="\${HOME}/.zshrc"
+  echo "export PATH=\\"\$BIN_DIR:\\$PATH\\"" >> "\$SHELL_RC"
+  echo "Added \$BIN_DIR to PATH in \$SHELL_RC"
+  echo "Run: source \$SHELL_RC  (or open a new terminal)"
+fi
+
+echo "kairos \${LATEST} installed. Run 'kairos --help' to get started"
 `;
 
 export async function GET() {
