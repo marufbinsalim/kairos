@@ -1,4 +1,4 @@
-import { loadAuth } from './config';
+import { loadAuth, clearAuth } from './config';
 
 const API_BASE = 'https://kairoscli-api.onrender.com';
 
@@ -13,6 +13,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   const res = await fetch(`${API_BASE}/api${path}`, { ...options, headers });
   if (!res.ok) {
+    if (res.status === 401) {
+      clearAuth();
+      throw new Error('Session expired. Please run: kairos login');
+    }
     const body = await res.text().catch(() => '');
     throw new Error(`API error ${res.status}: ${body}`);
   }
