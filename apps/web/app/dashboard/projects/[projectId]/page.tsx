@@ -133,7 +133,7 @@ function EnvRow({ env, projectId, onDelete, onRename }: { env: Environment; proj
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
           </svg>
         </div>
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
           <button onClick={(e) => { e.stopPropagation(); onRename(env); }}
             className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-600 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors"
             aria-label="Rename environment">
