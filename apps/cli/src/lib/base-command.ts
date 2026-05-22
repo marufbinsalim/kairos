@@ -33,6 +33,12 @@ async function syncLocalState() {
         updates.deviceEnvMap = Object.fromEntries(
           Object.entries(config.deviceEnvMap ?? {}).filter(([, devId]) => activeSet.has(devId as string)),
         );
+        if (validIds.length === 0) {
+          updates.defaultEnvironmentId = undefined;
+          updates.defaultEnvName = undefined;
+          updates.defaultProjectName = undefined;
+          updates.defaultProjectId = undefined;
+        }
       }
     }
 
