@@ -47,7 +47,7 @@ export default class Update extends Command {
 
       if (os === 'win32') {
         execSync(
-          `tar -xzf "${tmp}" -C "${installDir}" --strip-components=1 --exclude="kairos/node_modules/.bin" --exclude="node_modules/.bin"`,
+          `tar -xzf "${tmp}" -C "${installDir}" --strip-components=1 --exclude="kairos/node_modules/.bin" --exclude="node_modules/.bin" --exclude="*/node.exe"`,
           { stdio: 'pipe' },
         );
       } else {

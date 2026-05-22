@@ -65,6 +65,7 @@ function showStatus() {
     ['secrets -g FILENAME',        'Write secrets to FILENAME'],
     ['environments list',          'List all environments'],
     ['device DEVICE_NAME',         'Set a name for this device'],
+    ['update',                     'Update kairos to the latest version'],
   ];
 
   for (const [cmd, desc] of cmds) {
