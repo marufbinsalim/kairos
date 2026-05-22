@@ -121,8 +121,8 @@ export default function DocsPage() {
 
   const steps =
     platform === 'linux' ? linuxSteps(linuxArch) :
-    platform === 'mac'   ? macSteps(macArch) :
-    winShell === 'ps'    ? winPsSteps : winCmdSteps;
+      platform === 'mac' ? macSteps(macArch) :
+        winShell === 'ps' ? winPsSteps : winCmdSteps;
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
@@ -298,7 +298,7 @@ export default function DocsPage() {
                   ['kairos secrets -t TOKEN', 'Fetch secrets using a deploy token (no login required)'],
                   ['kairos run -- CMD', 'Run a command with secrets injected as env vars'],
                   ['kairos run -t TOKEN -- CMD', 'Run a command using a deploy token'],
-                  ['kairos name "My Laptop"', 'Set a label for this device'],
+                  ['kairos device "My Laptop"', 'Set a label for this device'],
                   ['kairos logout', 'Sign out and clear local credentials'],
                 ].map(([cmd, desc], i, arr) => (
                   <div key={cmd} className={`flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 px-5 py-3.5 ${i < arr.length - 1 ? 'border-b border-gray-200 dark:border-gray-800' : ''}`}>

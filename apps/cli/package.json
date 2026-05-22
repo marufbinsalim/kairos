@@ -1,6 +1,6 @@
 {
   "name": "@kairos/cli",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "private": true,
   "description": "Kairos CLI — E2EE secrets manager",
   "main": "dist/index.js",

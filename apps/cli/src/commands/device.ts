@@ -5,14 +5,14 @@ import { loadConfig, saveConfig, loadAuth } from '../lib/config';
 import { ok } from '../lib/ui';
 import chalk from 'chalk';
 
-export default class Name extends BaseCommand {
+export default class Device extends BaseCommand {
   static description = 'Set a name for this device';
   static args = {
     name: Args.string({ required: true, description: 'Device name' }),
   };
 
   async run() {
-    const { args } = await this.parse(Name);
+    const { args } = await this.parse(Device);
     const auth = loadAuth();
     if (!auth) this.error('Not logged in. Run: kairos login');
     const config = loadConfig();

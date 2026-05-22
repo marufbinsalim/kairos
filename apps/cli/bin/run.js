@@ -64,7 +64,7 @@ function showStatus() {
     ['secrets -g',                 'Write secrets to .env in current directory'],
     ['secrets -g FILENAME',        'Write secrets to FILENAME'],
     ['environments list',          'List all environments'],
-    ['name DEVICE_NAME',           'Set a name for this device'],
+    ['device DEVICE_NAME',         'Set a name for this device'],
   ];
 
   for (const [cmd, desc] of cmds) {

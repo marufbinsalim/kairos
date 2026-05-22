@@ -97,7 +97,7 @@ kairos secrets -g .env.local
 kairos environments list
 
 # Name this device
-kairos name "my-macbook"
+kairos device "my-macbook"
 ```
 
 ### Deploy Tokens (CI/CD)
