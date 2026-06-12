@@ -7,7 +7,8 @@ import { CliCodeDto } from './dto/cli-code.dto';
 import { CliPollDto } from './dto/cli-poll.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
-type AuthedRequest = { user: { sub: string } };
+// JwtStrategy.validate() returns the full User entity
+type AuthedRequest = { user: { id: string } };
 
 @Controller('auth')
 export class AuthController {
@@ -22,13 +23,13 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   me(@Request() req: AuthedRequest) {
-    return this.authService.me(req.user.sub);
+    return this.authService.me(req.user.id);
   }
 
   @Post('setup-keys')
   @UseGuards(JwtAuthGuard)
   setupKeys(@Request() req: AuthedRequest, @Body() dto: SetupKeysDto) {
-    return this.authService.setupKeys(req.user.sub, dto);
+    return this.authService.setupKeys(req.user.id, dto);
   }
 
   @Post('logout')
@@ -41,7 +42,7 @@ export class AuthController {
   @Patch('update-mnemonic')
   @UseGuards(JwtAuthGuard)
   updateMnemonic(@Request() req: AuthedRequest, @Body() dto: UpdateMnemonicDto) {
-    return this.authService.updateMnemonic(req.user.sub, dto);
+    return this.authService.updateMnemonic(req.user.id, dto);
   }
 
   // ─── CLI device-code flow ─────────────────────────────────────────────────
@@ -56,14 +57,14 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   cliApprove(@Request() req: AuthedRequest, @Body() dto: CliCodeDto) {
-    return this.authService.cliApprove(req.user.sub, dto.code);
+    return this.authService.cliApprove(req.user.id, dto.code);
   }
 
   @Post('cli/deny')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   cliDeny(@Request() req: AuthedRequest, @Body() dto: CliCodeDto) {
-    return this.authService.cliDeny(req.user.sub, dto.code);
+    return this.authService.cliDeny(req.user.id, dto.code);
   }
 
   @Post('cli/poll')
