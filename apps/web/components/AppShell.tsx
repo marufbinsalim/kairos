@@ -7,6 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useTheme } from './ThemeProvider';
 import { KairosLogo } from './KairosLogo';
+import { BrandLink } from './BrandLink';
 import { VaultGuard } from './VaultGuard';
 
 const NAV = [
@@ -60,10 +61,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <>
       {/* Brand */}
       <div className="px-5 h-14 flex items-center border-b border-gray-200 dark:border-gray-800/60 flex-shrink-0">
-        <div className="flex items-center gap-2.5">
-          <KairosLogo size={28} />
-          <span className="font-semibold text-gray-900 dark:text-white text-sm tracking-tight">kairos</span>
-        </div>
+        <BrandLink size={28} text />
       </div>
 
       {/* Nav */}

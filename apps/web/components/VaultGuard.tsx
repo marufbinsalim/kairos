@@ -19,7 +19,7 @@ import {
 } from '@/lib/storage/keys';
 import { x25519 } from '@noble/curves/ed25519';
 import { DeviceType } from '@kairos/types';
-import { KairosLogo } from './KairosLogo';
+import { BrandLink } from './BrandLink';
 
 /**
  * Gates every signed-in page behind a vault check: the local private key must
@@ -120,10 +120,7 @@ export function VaultGuard({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="flex items-center gap-2.5 mb-8">
-          <KairosLogo size={32} />
-          <span className="text-gray-900 dark:text-white font-semibold text-lg tracking-tight">kairos</span>
-        </div>
+        <div className="mb-8"><BrandLink size={32} /></div>
 
         <div className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-8 shadow-xl dark:shadow-2xl">
           <div className="flex items-center gap-3 mb-4">

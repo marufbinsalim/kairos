@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { selectAuth } from '@/lib/store/authSlice';
 import { useCliApproveMutation, useCliDenyMutation } from '@/lib/store/api';
-import { KairosLogo } from '@/components/KairosLogo';
+import { BrandLink } from '@/components/BrandLink';
 
 type State = 'confirm' | 'approved' | 'denied' | 'error';
 
@@ -51,10 +51,7 @@ function CliAuthInner() {
   return (
     <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        <div className="flex items-center gap-2.5 mb-8">
-          <KairosLogo size={32} />
-          <span className="text-gray-900 dark:text-white font-semibold text-lg tracking-tight">kairos</span>
-        </div>
+        <div className="mb-8"><BrandLink size={32} /></div>
 
         <div className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-8 shadow-xl dark:shadow-2xl text-center">
           {state === 'confirm' && (

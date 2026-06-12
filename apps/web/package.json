@@ -11,6 +11,7 @@
     "@kairos/types": "workspace:*",
     "@noble/curves": "^1.4.0",
     "@noble/hashes": "^1.4.0",
+    "@react-three/fiber": "^8.18.0",
     "@reduxjs/toolkit": "^2.2.3",
     "bip39": "^3.1.0",
     "geist": "^1.7.2",
@@ -18,12 +19,14 @@
     "next": "14.2.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-redux": "^9.1.2"
+    "react-redux": "^9.1.2",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
+    "@types/three": "^0.184.1",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
