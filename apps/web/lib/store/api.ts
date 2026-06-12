@@ -149,7 +149,7 @@ export const api = createApi({
 });
 
 export const {
-  useGoogleLoginMutation, useGetMeQuery, useSetupKeysMutation, useLogoutMutation,
+  useGoogleLoginMutation, useGetMeQuery, useLazyGetMeQuery, useSetupKeysMutation, useLogoutMutation,
   useCliApproveMutation, useCliDenyMutation,
   useRegisterDeviceMutation, useCompleteRegistrationMutation,
   useListPendingDevicesQuery, useCompleteApprovalMutation,

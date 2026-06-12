@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch } from 'react-redux';
-import { useGoogleLoginMutation, useSetupKeysMutation, useRegisterDeviceMutation } from '@/lib/store/api';
+import { useGoogleLoginMutation, useSetupKeysMutation, useRegisterDeviceMutation, useLazyGetMeQuery } from '@/lib/store/api';
 import { setAuth } from '@/lib/store/authSlice';
 import { setKeypair, setDeviceId } from '@/lib/store/cryptoSlice';
 import {
@@ -89,6 +89,7 @@ function LoginInner() {
   const [googleLogin] = useGoogleLoginMutation();
   const [setupKeys] = useSetupKeysMutation();
   const [registerDevice] = useRegisterDeviceMutation();
+  const [fetchMe] = useLazyGetMeQuery();
 
   const next = searchParams.get('next');
   const destination = next && next.startsWith('/') ? next : '/dashboard';
@@ -207,6 +208,16 @@ function LoginInner() {
         setError('That is not a valid 12-word recovery phrase.');
         setBusy(false);
         return;
+      }
+      // Re-fetch at submit time — the phrase may have been regenerated on
+      // another device after this page loaded
+      try {
+        const me = await fetchMe().unwrap();
+        if (me.mnemonicEncryptedPrivateKey && me.publicKey) {
+          restoreDataRef.current = { blob: me.mnemonicEncryptedPrivateKey, publicKey: me.publicKey };
+        }
+      } catch {
+        /* fall back to the blob from sign-in */
       }
       const privateKey = await unwrapPrivateKeyWithMnemonic(restoreDataRef.current.blob, phrase);
       if (bytesToBase64(x25519.getPublicKey(privateKey)) !== restoreDataRef.current.publicKey) {
