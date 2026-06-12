@@ -79,6 +79,7 @@ function LoginInner() {
   // restore state
   const [phrase, setPhrase] = useState('');
   const restoreDataRef = useRef<{ blob: string; publicKey: string; keysVersion: number } | null>(null);
+  const userIdRef = useRef<string>('');
 
   const googleButtonRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
@@ -97,7 +98,7 @@ function LoginInner() {
   const finalize = useCallback(
     async (privateKey: Uint8Array) => {
       const publicKey = x25519.getPublicKey(privateKey);
-      savePrivateKeyLocal(privateKey);
+      savePrivateKeyLocal(userIdRef.current, privateKey);
       dispatch(setKeypair({ privateKey, publicKey }));
 
       const device = await registerDevice({
@@ -105,7 +106,7 @@ function LoginInner() {
         type: DeviceType.web,
         label: `Web — ${navigator.userAgent.slice(0, 40)}`,
       }).unwrap();
-      saveDeviceIdLocal(device.deviceId);
+      saveDeviceIdLocal(userIdRef.current, device.deviceId);
       dispatch(setDeviceId(device.deviceId));
 
       router.push(destination);
@@ -119,6 +120,7 @@ function LoginInner() {
       setError('');
       try {
         const res = await googleLogin({ idToken }).unwrap();
+        userIdRef.current = res.userId;
         dispatch(setAuth({ accessToken: res.accessToken, userId: res.userId, email: res.email }));
 
         if (!res.publicKey) {
@@ -132,11 +134,11 @@ function LoginInner() {
 
         // Existing account — is this browser already trusted? The key must match
         // AND the phrase must not have been regenerated since we last verified it.
-        const local = loadPrivateKeyLocal();
+        const local = loadPrivateKeyLocal(res.userId);
         if (
           local &&
           bytesToBase64(x25519.getPublicKey(local)) === res.publicKey &&
-          loadKeysVersionLocal() === res.keysVersion
+          loadKeysVersionLocal(res.userId) === res.keysVersion
         ) {
           await finalize(local);
           return;
@@ -200,7 +202,7 @@ function LoginInner() {
       const { privateKey, publicKey } = keypairRef.current;
       const mnemonicEncryptedPrivateKey = await wrapPrivateKeyWithMnemonic(privateKey, mnemonic);
       await setupKeys({ publicKey: bytesToBase64(publicKey), mnemonicEncryptedPrivateKey }).unwrap();
-      saveKeysVersionLocal(1);
+      saveKeysVersionLocal(userIdRef.current, 1);
       await finalize(privateKey);
     } catch {
       setError('Key setup failed. Please try again.');
@@ -239,7 +241,7 @@ function LoginInner() {
         setBusy(false);
         return;
       }
-      saveKeysVersionLocal(restoreDataRef.current.keysVersion);
+      saveKeysVersionLocal(userIdRef.current, restoreDataRef.current.keysVersion);
       await finalize(privateKey);
     } catch {
       setError('That phrase does not match this account.');

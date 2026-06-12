@@ -13,6 +13,7 @@ import { loadPrivateKeyLocal, saveKeysVersionLocal } from '@/lib/storage/keys';
 
 function RegenerateMnemonicSection() {
   const { privateKey } = useSelector(selectCrypto);
+  const { userId } = useSelector(selectAuth);
   const [phase, setPhase] = useState<'idle' | 'confirm' | 'show'>('idle');
   const [newMnemonic, setNewMnemonic] = useState('');
   const [copied, setCopied] = useState(false);
@@ -53,11 +54,12 @@ function RegenerateMnemonicSection() {
     setLoading(true);
     setError('');
     try {
+      if (!userId) throw new Error('no_user');
       let rawPrivateKey: Uint8Array;
       if (privateKey) {
         rawPrivateKey = privateKey instanceof Uint8Array ? privateKey : new Uint8Array(Object.values(privateKey as Record<string, number>));
       } else {
-        const stored = loadPrivateKeyLocal();
+        const stored = loadPrivateKeyLocal(userId);
         if (!stored) throw new Error('no_key');
         rawPrivateKey = stored;
       }
@@ -65,7 +67,7 @@ function RegenerateMnemonicSection() {
       const mnemonicEncryptedPrivateKey = await wrapPrivateKeyWithMnemonic(rawPrivateKey, newMnemonic);
       const result = await updateMnemonic({ mnemonicEncryptedPrivateKey }).unwrap();
       // This device stays verified; every other web device locks until the new phrase is entered
-      saveKeysVersionLocal(result.keysVersion);
+      saveKeysVersionLocal(userId, result.keysVersion);
       setSuccess(true);
       setPhase('idle');
       setNewMnemonic('');

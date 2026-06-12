@@ -64,10 +64,10 @@ export function VaultGuard({ children }: { children: React.ReactNode }) {
   const locked = useMemo(() => {
     void unlockedAt;
     if (!me?.publicKey) return false; // still loading (or redirecting) — handled above
-    const localKey = privateKey ?? loadPrivateKeyLocal();
+    const localKey = privateKey ?? loadPrivateKeyLocal(me.userId);
     if (!localKey) return true;
     if (bytesToBase64(x25519.getPublicKey(localKey)) !== me.publicKey) return true;
-    if (loadKeysVersionLocal() !== me.keysVersion) return true;
+    if (loadKeysVersionLocal(me.userId) !== me.keysVersion) return true;
     return false;
   }, [me, privateKey, unlockedAt]);
 
@@ -91,15 +91,15 @@ export function VaultGuard({ children }: { children: React.ReactNode }) {
         setBusy(false);
         return;
       }
-      savePrivateKeyLocal(key);
-      saveKeysVersionLocal(me.keysVersion);
+      savePrivateKeyLocal(me.userId, key);
+      saveKeysVersionLocal(me.userId, me.keysVersion);
       dispatch(setKeypair({ privateKey: key, publicKey }));
       const device = await registerDevice({
         publicKey: bytesToBase64(publicKey),
         type: DeviceType.web,
         label: `Web — ${navigator.userAgent.slice(0, 40)}`,
       }).unwrap();
-      saveDeviceIdLocal(device.deviceId);
+      saveDeviceIdLocal(me.userId, device.deviceId);
       dispatch(setDeviceId(device.deviceId));
       setPhrase('');
       setUnlockedAt(Date.now());

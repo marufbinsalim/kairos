@@ -9,7 +9,12 @@ interface CryptoState {
 
 function loadDeviceId(): string | null {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('kairos_deviceId') ?? sessionStorage.getItem('kairos_deviceId');
+  const userId = sessionStorage.getItem('kairos_userId');
+  return (
+    (userId ? localStorage.getItem(`kairos_deviceId:${userId}`) : null) ??
+    localStorage.getItem('kairos_deviceId') ??
+    sessionStorage.getItem('kairos_deviceId')
+  );
 }
 
 const initialState: CryptoState = {
@@ -30,9 +35,9 @@ const cryptoSlice = createSlice({
     setDEK(state, action: PayloadAction<Uint8Array>) {
       state.dek = action.payload;
     },
+    // Persistence happens at the call sites via saveDeviceIdLocal (needs userId)
     setDeviceId(state, action: PayloadAction<string>) {
       state.deviceId = action.payload;
-      localStorage.setItem('kairos_deviceId', action.payload);
     },
     clearCrypto(state) {
       state.privateKey = null;

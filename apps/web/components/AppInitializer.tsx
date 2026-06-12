@@ -8,14 +8,14 @@ import { x25519 } from '@noble/curves/ed25519';
 
 export function AppInitializer() {
   const dispatch = useDispatch();
-  const { accessToken } = useSelector(selectAuth);
+  const { accessToken, userId } = useSelector(selectAuth);
   const { privateKey, deviceId } = useSelector(selectCrypto);
 
   useEffect(() => {
-    if (!accessToken) return;
+    if (!accessToken || !userId) return;
 
     if (!privateKey) {
-      const key = loadPrivateKeyLocal();
+      const key = loadPrivateKeyLocal(userId);
       if (key) {
         const publicKey = x25519.getPublicKey(key);
         dispatch(setKeypair({ privateKey: key, publicKey }));
@@ -23,10 +23,10 @@ export function AppInitializer() {
     }
 
     if (!deviceId) {
-      const stored = loadDeviceIdLocal();
+      const stored = loadDeviceIdLocal(userId);
       if (stored) dispatch(setDeviceId(stored));
     }
-  }, [accessToken, privateKey, deviceId, dispatch]);
+  }, [accessToken, userId, privateKey, deviceId, dispatch]);
 
   return null;
 }
