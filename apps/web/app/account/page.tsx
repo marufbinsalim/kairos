@@ -9,7 +9,7 @@ import {
   generateRecoveryMnemonic,
   wrapPrivateKeyWithMnemonic,
 } from '@/lib/crypto/keypair';
-import { loadPrivateKeyLocal } from '@/lib/storage/keys';
+import { loadPrivateKeyLocal, saveKeysVersionLocal } from '@/lib/storage/keys';
 
 function RegenerateMnemonicSection() {
   const { privateKey } = useSelector(selectCrypto);
@@ -63,7 +63,9 @@ function RegenerateMnemonicSection() {
       }
 
       const mnemonicEncryptedPrivateKey = await wrapPrivateKeyWithMnemonic(rawPrivateKey, newMnemonic);
-      await updateMnemonic({ mnemonicEncryptedPrivateKey }).unwrap();
+      const result = await updateMnemonic({ mnemonicEncryptedPrivateKey }).unwrap();
+      // This device stays verified; every other web device locks until the new phrase is entered
+      saveKeysVersionLocal(result.keysVersion);
       setSuccess(true);
       setPhase('idle');
       setNewMnemonic('');

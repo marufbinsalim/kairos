@@ -28,6 +28,20 @@ export function clearPrivateKeyLocal(): void {
   sessionStorage.removeItem(PRIVKEY_KEY);
 }
 
+const KEYS_VERSION_KEY = 'kairos_keysVersion';
+
+/** Server-side keysVersion this browser last verified the phrase against.
+ *  When the account's version moves past it (phrase regenerated elsewhere),
+ *  the vault locks until the new phrase is entered. */
+export function saveKeysVersionLocal(version: number): void {
+  localStorage.setItem(KEYS_VERSION_KEY, String(version));
+}
+
+export function loadKeysVersionLocal(): number | null {
+  const v = localStorage.getItem(KEYS_VERSION_KEY);
+  return v ? Number(v) : null;
+}
+
 export function saveDeviceIdLocal(deviceId: string): void {
   localStorage.setItem(DEVICE_ID_KEY, deviceId);
 }

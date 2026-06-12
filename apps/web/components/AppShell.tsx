@@ -7,6 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useTheme } from './ThemeProvider';
 import { KairosLogo } from './KairosLogo';
+import { VaultGuard } from './VaultGuard';
 
 const NAV = [
   { href: '/dashboard', label: 'Projects', icon: (
@@ -124,6 +125,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
+    <VaultGuard>
     <div className="flex h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-[220px] flex-shrink-0 flex-col bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800/60">
@@ -177,5 +179,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
     </div>
+    </VaultGuard>
   );
 }

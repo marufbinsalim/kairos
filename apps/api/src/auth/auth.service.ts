@@ -82,6 +82,7 @@ export class AuthService {
       picture: user.picture,
       publicKey: user.publicKey,
       mnemonicEncryptedPrivateKey: user.mnemonicEncryptedPrivateKey,
+      keysVersion: user.keysVersion,
     };
   }
 
@@ -102,9 +103,10 @@ export class AuthService {
     if (!user) throw new UnauthorizedException('User not found');
 
     user.mnemonicEncryptedPrivateKey = dto.mnemonicEncryptedPrivateKey;
+    user.keysVersion = (user.keysVersion ?? 1) + 1;
     await this.userRepo.save(user);
 
-    return { message: 'Recovery phrase updated' };
+    return { message: 'Recovery phrase updated', keysVersion: user.keysVersion };
   }
 
   // ─── CLI device-code flow ─────────────────────────────────────────────────
@@ -178,6 +180,7 @@ export class AuthService {
       picture: user.picture,
       publicKey: user.publicKey,
       mnemonicEncryptedPrivateKey: user.mnemonicEncryptedPrivateKey,
+      keysVersion: user.keysVersion,
     };
   }
 }

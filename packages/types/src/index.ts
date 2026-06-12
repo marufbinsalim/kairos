@@ -71,6 +71,7 @@ export interface AuthResponse {
   picture: string | null;
   publicKey: string | null;
   mnemonicEncryptedPrivateKey: string | null;
+  keysVersion: number;
 }
 
 export interface MeResponse {
@@ -80,6 +81,7 @@ export interface MeResponse {
   picture: string | null;
   publicKey: string | null;
   mnemonicEncryptedPrivateKey: string | null;
+  keysVersion: number;
 }
 
 export interface SetupKeysArgs {

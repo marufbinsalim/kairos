@@ -122,7 +122,7 @@ export const api = createApi({
       query: ({ environmentId, deviceId }) =>
         `/sync/${environmentId}?deviceId=${deviceId}`,
     }),
-    updateMnemonic: build.mutation<{ message: string }, UpdateMnemonicArgs>({
+    updateMnemonic: build.mutation<{ message: string; keysVersion: number }, UpdateMnemonicArgs>({
       query: (body) => ({ url: '/auth/update-mnemonic', method: 'PATCH', body }),
     }),
     getDeployToken: build.query<DeployToken | null, string>({

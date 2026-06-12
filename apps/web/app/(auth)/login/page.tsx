@@ -13,7 +13,7 @@ import {
   wrapPrivateKeyWithMnemonic,
   unwrapPrivateKeyWithMnemonic,
 } from '@/lib/crypto/keypair';
-import { savePrivateKeyLocal, loadPrivateKeyLocal, saveDeviceIdLocal } from '@/lib/storage/keys';
+import { savePrivateKeyLocal, loadPrivateKeyLocal, saveDeviceIdLocal, saveKeysVersionLocal, loadKeysVersionLocal } from '@/lib/storage/keys';
 import { x25519 } from '@noble/curves/ed25519';
 import { DeviceType } from '@kairos/types';
 import { useTheme } from '@/components/ThemeProvider';
@@ -78,7 +78,7 @@ function LoginInner() {
 
   // restore state
   const [phrase, setPhrase] = useState('');
-  const restoreDataRef = useRef<{ blob: string; publicKey: string } | null>(null);
+  const restoreDataRef = useRef<{ blob: string; publicKey: string; keysVersion: number } | null>(null);
 
   const googleButtonRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
@@ -130,9 +130,14 @@ function LoginInner() {
           return;
         }
 
-        // Existing account — is this browser already trusted?
+        // Existing account — is this browser already trusted? The key must match
+        // AND the phrase must not have been regenerated since we last verified it.
         const local = loadPrivateKeyLocal();
-        if (local && bytesToBase64(x25519.getPublicKey(local)) === res.publicKey) {
+        if (
+          local &&
+          bytesToBase64(x25519.getPublicKey(local)) === res.publicKey &&
+          loadKeysVersionLocal() === res.keysVersion
+        ) {
           await finalize(local);
           return;
         }
@@ -142,7 +147,11 @@ function LoginInner() {
           setBusy(false);
           return;
         }
-        restoreDataRef.current = { blob: res.mnemonicEncryptedPrivateKey, publicKey: res.publicKey };
+        restoreDataRef.current = {
+          blob: res.mnemonicEncryptedPrivateKey,
+          publicKey: res.publicKey,
+          keysVersion: res.keysVersion,
+        };
         setStep('restore');
         setBusy(false);
       } catch {
@@ -191,6 +200,7 @@ function LoginInner() {
       const { privateKey, publicKey } = keypairRef.current;
       const mnemonicEncryptedPrivateKey = await wrapPrivateKeyWithMnemonic(privateKey, mnemonic);
       await setupKeys({ publicKey: bytesToBase64(publicKey), mnemonicEncryptedPrivateKey }).unwrap();
+      saveKeysVersionLocal(1);
       await finalize(privateKey);
     } catch {
       setError('Key setup failed. Please try again.');
@@ -214,7 +224,11 @@ function LoginInner() {
       try {
         const me = await fetchMe().unwrap();
         if (me.mnemonicEncryptedPrivateKey && me.publicKey) {
-          restoreDataRef.current = { blob: me.mnemonicEncryptedPrivateKey, publicKey: me.publicKey };
+          restoreDataRef.current = {
+            blob: me.mnemonicEncryptedPrivateKey,
+            publicKey: me.publicKey,
+            keysVersion: me.keysVersion,
+          };
         }
       } catch {
         /* fall back to the blob from sign-in */
@@ -225,6 +239,7 @@ function LoginInner() {
         setBusy(false);
         return;
       }
+      saveKeysVersionLocal(restoreDataRef.current.keysVersion);
       await finalize(privateKey);
     } catch {
       setError('That phrase does not match this account.');

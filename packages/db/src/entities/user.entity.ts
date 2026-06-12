@@ -27,6 +27,11 @@ export class User {
   @Column({ type: 'text', nullable: true })
   publicKey: string | null;
 
+  /** Bumped whenever the recovery phrase is regenerated — other web devices
+   *  compare this against their stored copy and lock until re-verified. */
+  @Column({ type: 'int', default: 1 })
+  keysVersion: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
