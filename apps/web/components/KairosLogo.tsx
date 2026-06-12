@@ -6,7 +6,7 @@ export function KairosLogo({ size = 28 }: { size?: number }) {
       viewBox="0 0 512 512"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="rounded-xl flex-shrink-0"
+      className="rounded-lg flex-shrink-0"
     >
       <defs>
         <linearGradient id="kairosGradient" x1="80" y1="64" x2="420" y2="448" gradientUnits="userSpaceOnUse">

@@ -10,7 +10,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
-      className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 shrink-0"
+      className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800 shrink-0"
     >
       {copied ? 'Copied!' : 'Copy'}
     </button>
@@ -19,7 +19,7 @@ function CopyButton({ text }: { text: string }) {
 
 function CodeBlock({ title, code }: { title?: string; code: string }) {
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+    <div className="bg-gray-100 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
       {title ? (
         <>
           <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-800">
@@ -114,7 +114,7 @@ export default function DashboardDocsPage() {
                 <a
                   key={s.id}
                   href={`#${s.id}`}
-                  className="block px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/60 transition-colors"
+                  className="block px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900/60 transition-colors"
                 >
                   {s.label}
                 </a>
@@ -142,7 +142,7 @@ export default function DashboardDocsPage() {
               <div className="flex gap-2 mb-5 flex-wrap">
                 {([['linux', '🐧', 'Linux'], ['mac', '🍎', 'macOS'], ['windows', '🪟', 'Windows']] as const).map(([id, icon, label]) => (
                   <button key={id} onClick={() => setPlatform(id)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${platform === id ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700'}`}>
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${platform === id ? 'bg-gray-900 dark:bg-gray-100 dark:text-black text-white' : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800'}`}>
                     <span>{icon}</span>{label}
                   </button>
                 ))}
@@ -181,10 +181,10 @@ export default function DashboardDocsPage() {
 
               <div className="space-y-3">
                 {steps.map((step) => (
-                  <div key={step.n} className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+                  <div key={step.n} className="bg-gray-100 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
                     <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 dark:border-gray-800">
                       <span className="text-xs text-gray-500">
-                        <span className="text-indigo-500 dark:text-indigo-400 mr-2">{step.n}.</span>{step.title}
+                        <span className="text-blue-600 dark:text-blue-500 mr-2">{step.n}.</span>{step.title}
                       </span>
                       <CopyButton text={step.code} />
                     </div>
@@ -201,7 +201,7 @@ export default function DashboardDocsPage() {
               <div className="flex gap-2 mb-4 flex-wrap">
                 {(Object.keys(updateSteps) as Array<keyof typeof updateSteps>).map((k) => (
                   <button key={k} onClick={() => setUpdatePlatform(k)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${updatePlatform === k ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${updatePlatform === k ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600' : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
                     {k}
                   </button>
                 ))}
@@ -221,7 +221,7 @@ export default function DashboardDocsPage() {
               <div className="flex gap-2 mb-4 flex-wrap">
                 {(Object.keys(removeSteps) as Array<keyof typeof removeSteps>).map((k) => (
                   <button key={k} onClick={() => setRemovePlatform(k)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${removePlatform === k ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${removePlatform === k ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600' : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
                     {k}
                   </button>
                 ))}
@@ -233,7 +233,7 @@ export default function DashboardDocsPage() {
             <section id="cli">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">CLI Reference</h2>
               <p className="text-gray-500 text-sm mb-5">All commands and flags.</p>
-              <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+              <div className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
                 {[
                   ['kairos login', 'Sign in to your account'],
                   ['kairos switch', 'Select a project / environment (registers device if needed)'],
@@ -247,7 +247,7 @@ export default function DashboardDocsPage() {
                   ['kairos logout', 'Sign out and clear local credentials'],
                 ].map(([cmd, desc], i, arr) => (
                   <div key={cmd} className={`flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 px-5 py-3.5 ${i < arr.length - 1 ? 'border-b border-gray-200 dark:border-gray-800' : ''}`}>
-                    <code className="text-indigo-600 dark:text-indigo-400 font-mono text-sm shrink-0 sm:w-60">{cmd}</code>
+                    <code className="text-blue-600 dark:text-blue-500 font-mono text-sm shrink-0 sm:w-60">{cmd}</code>
                     <span className="text-gray-600 dark:text-gray-400 text-sm">{desc}</span>
                   </div>
                 ))}

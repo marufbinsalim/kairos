@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
 import './globals.css';
 import { Providers } from '@/components/providers';
 
@@ -33,11 +35,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('kairos-theme');if(t==='dark'){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}})()` }} />
       </head>
-      <body className="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen">
+      <body className="font-sans bg-white dark:bg-black text-gray-900 dark:text-gray-100 min-h-screen">
         <Providers>{children}</Providers>
       </body>
     </html>

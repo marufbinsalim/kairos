@@ -36,7 +36,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
-      className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 shrink-0"
+      className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800 shrink-0"
     >
       {copied ? 'Copied!' : 'Copy'}
     </button>
@@ -45,7 +45,7 @@ function CopyButton({ text }: { text: string }) {
 
 function CodeBlock({ title, code }: { title?: string; code: string }) {
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+    <div className="bg-gray-100 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
       {title ? (
         <>
           <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-800">
@@ -125,9 +125,9 @@ export default function DocsPage() {
         winShell === 'ps' ? winPsSteps : winCmdSteps;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white">
       {/* Nav */}
-      <nav className="border-b border-gray-200 dark:border-gray-900 px-6 py-4 sticky top-0 z-10 bg-white/95 dark:bg-gray-950/95 backdrop-blur">
+      <nav className="border-b border-gray-200 dark:border-gray-900 px-6 py-4 sticky top-0 z-10 bg-white/95 dark:bg-black/95 backdrop-blur">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2">
@@ -139,7 +139,7 @@ export default function DocsPage() {
           </div>
           <div className="flex items-center gap-4">
             <a href={`https://github.com/${REPO}`} target="_blank" rel="noreferrer" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">GitHub</a>
-            <button onClick={toggle} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+            <button onClick={toggle} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
               {theme === 'dark' ? (
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
@@ -150,7 +150,7 @@ export default function DocsPage() {
                 </svg>
               )}
             </button>
-            <Link href="/login" className="text-sm bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-1.5 rounded-lg transition-colors">Sign in</Link>
+            <Link href="/login" className="text-sm bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white text-white dark:text-black px-4 py-1.5 rounded-lg transition-colors">Sign in</Link>
           </div>
         </div>
       </nav>
@@ -164,7 +164,7 @@ export default function DocsPage() {
                 <a
                   key={s.id}
                   href={`#${s.id}`}
-                  className="block px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/60 transition-colors"
+                  className="block px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900/60 transition-colors"
                 >
                   {s.label}
                 </a>
@@ -197,7 +197,7 @@ export default function DocsPage() {
                   { id: 'windows', Icon: WindowsIcon, label: 'Windows' },
                 ] as const).map(({ id, Icon, label }) => (
                   <button key={id} onClick={() => setPlatform(id)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${platform === id ? 'bg-indigo-600 text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-300 dark:hover:bg-gray-700'}`}>
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${platform === id ? 'bg-gray-900 dark:bg-gray-100 dark:text-black text-white' : 'bg-gray-200 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-300 dark:hover:bg-gray-800'}`}>
                     <Icon className="w-4 h-4" />{label}
                   </button>
                 ))}
@@ -236,10 +236,10 @@ export default function DocsPage() {
 
               <div className="space-y-3">
                 {steps.map((step) => (
-                  <div key={step.n} className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+                  <div key={step.n} className="bg-gray-100 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
                     <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 dark:border-gray-800">
                       <span className="text-xs text-gray-600 dark:text-gray-400">
-                        <span className="text-indigo-400 mr-2">{step.n}.</span>{step.title}
+                        <span className="text-gray-600 dark:text-gray-400 mr-2">{step.n}.</span>{step.title}
                       </span>
                       <CopyButton text={step.code} />
                     </div>
@@ -256,7 +256,7 @@ export default function DocsPage() {
               <div className="flex gap-2 mb-4 flex-wrap">
                 {(Object.keys(updateSteps) as Array<keyof typeof updateSteps>).map((k) => (
                   <button key={k} onClick={() => setUpdatePlatform(k)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${updatePlatform === k ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600' : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${updatePlatform === k ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600' : 'bg-gray-200 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
                     {k}
                   </button>
                 ))}
@@ -276,7 +276,7 @@ export default function DocsPage() {
               <div className="flex gap-2 mb-4 flex-wrap">
                 {(Object.keys(removeSteps) as Array<keyof typeof removeSteps>).map((k) => (
                   <button key={k} onClick={() => setRemovePlatform(k)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${removePlatform === k ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600' : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${removePlatform === k ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600' : 'bg-gray-200 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
                     {k}
                   </button>
                 ))}
@@ -288,7 +288,7 @@ export default function DocsPage() {
             <section id="cli">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">CLI Reference</h2>
               <p className="text-gray-600 dark:text-gray-400 mb-6">All commands and flags.</p>
-              <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden mb-8">
+              <div className="bg-gray-100 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden mb-8">
                 {[
                   ['kairos login', 'Sign in to your account'],
                   ['kairos switch', 'Select a project / environment (registers device if needed)'],
@@ -302,7 +302,7 @@ export default function DocsPage() {
                   ['kairos logout', 'Sign out and clear local credentials'],
                 ].map(([cmd, desc], i, arr) => (
                   <div key={cmd} className={`flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 px-5 py-3.5 ${i < arr.length - 1 ? 'border-b border-gray-200 dark:border-gray-800' : ''}`}>
-                    <code className="text-indigo-400 font-mono text-sm shrink-0 sm:w-64">{cmd}</code>
+                    <code className="text-gray-600 dark:text-gray-400 font-mono text-sm shrink-0 sm:w-64">{cmd}</code>
                     <span className="text-gray-600 dark:text-gray-400 text-sm">{desc}</span>
                   </div>
                 ))}
@@ -314,11 +314,11 @@ export default function DocsPage() {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Deploy tokens</h2>
               <p className="text-gray-600 dark:text-gray-400 mb-6">Generate a token per environment from the web dashboard. The token wraps the DEK — secrets stay E2E encrypted. No login, no device approval required.</p>
               <div className="space-y-4">
-                <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5">
+                <div className="bg-gray-100 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg p-5">
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Inject as env vars</p>
                   <pre className="text-sm text-gray-800 dark:text-gray-200 font-mono overflow-x-auto whitespace-pre">{`kairos run -t $KAIROS_TOKEN -- node server.js`}</pre>
                 </div>
-                <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5">
+                <div className="bg-gray-100 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg p-5">
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Write to .env file</p>
                   <pre className="text-sm text-gray-800 dark:text-gray-200 font-mono overflow-x-auto whitespace-pre">{`kairos secrets -t $KAIROS_TOKEN -g .env`}</pre>
                 </div>

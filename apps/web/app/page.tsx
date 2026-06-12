@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useTheme } from '@/components/ThemeProvider';
 import { KairosLogo } from '@/components/KairosLogo';
 
@@ -12,7 +11,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
-      className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 shrink-0"
+      className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800 shrink-0"
     >
       {copied ? 'Copied!' : 'Copy'}
     </button>
@@ -21,7 +20,7 @@ function CopyButton({ text }: { text: string }) {
 
 function CodeBlock({ title, code }: { title?: string; code: string }) {
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+    <div className="bg-gray-100 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
       {title ? (
         <>
           <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-800">
@@ -43,7 +42,7 @@ function CodeBlock({ title, code }: { title?: string; code: string }) {
 export default function LandingPage() {
   const { theme, toggle } = useTheme();
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white">
       {/* Nav */}
       <nav className="border-b border-gray-200 dark:border-gray-900 px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
@@ -54,7 +53,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-4">
             <Link href="/docs" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Docs</Link>
             <a href={`https://github.com/${REPO}`} target="_blank" rel="noreferrer" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">GitHub</a>
-            <button onClick={toggle} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+            <button onClick={toggle} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
               {theme === 'dark' ? (
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
@@ -65,7 +64,7 @@ export default function LandingPage() {
                 </svg>
               )}
             </button>
-            <Link href="/login" className="text-sm bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-1.5 rounded-lg transition-colors">Sign in</Link>
+            <Link href="/login" className="text-sm bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white text-white dark:text-black px-4 py-1.5 rounded-lg transition-colors">Sign in</Link>
           </div>
         </div>
       </nav>
@@ -77,18 +76,18 @@ export default function LandingPage() {
           <div className="flex flex-col-reverse md:flex-row items-center gap-12 md:gap-16">
             {/* Text */}
             <div className="flex-1 text-center md:text-left">
-              <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-4 py-1.5 text-xs text-indigo-400 mb-8">
+              <div className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700 rounded-full px-4 py-1.5 text-xs text-gray-600 dark:text-gray-400 mb-8">
                 E2EE secrets manager
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-gray-900 dark:text-white mb-6 leading-[1.05]">
                 Secrets your team can share.<br />
-                <span className="text-indigo-400">Keys only you hold.</span>
+                <span className="text-gray-500 dark:text-gray-500">Keys only you hold.</span>
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-lg mb-10 md:max-w-lg">
                 Kairos encrypts secrets end-to-end on your device. The server never sees plaintext. Pull secrets into any environment with a single CLI command.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
-                <Link href="/login" className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-center">
+                <Link href="/login" className="bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white text-white dark:text-black font-medium px-6 py-3 rounded-lg transition-colors w-full sm:w-auto text-center">
                   Get started free
                 </Link>
                 <a href="#install" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium px-6 py-3 w-full sm:w-auto text-center">
@@ -96,16 +95,28 @@ export default function LandingPage() {
                 </a>
               </div>
             </div>
-            {/* Illustration */}
-            <div className="flex-1 flex justify-center md:justify-end">
-              <Image
-                src="/hero-illustration.jpg"
-                alt="Kairos security illustration"
-                width={480}
-                height={400}
-                className="w-full max-w-sm md:max-w-md object-contain rounded-lg"
-                priority
-              />
+            {/* Terminal mockup */}
+            <div className="flex-1 w-full max-w-md md:max-w-lg">
+              <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] overflow-hidden text-left">
+                <div className="flex items-center gap-1.5 px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+                  <span className="w-3 h-3 rounded-full bg-gray-200 dark:bg-gray-700" />
+                  <span className="w-3 h-3 rounded-full bg-gray-200 dark:bg-gray-700" />
+                  <span className="w-3 h-3 rounded-full bg-gray-200 dark:bg-gray-700" />
+                  <span className="ml-3 text-xs text-gray-400 dark:text-gray-600 font-mono">terminal</span>
+                </div>
+                <pre className="px-5 py-4 text-[13px] leading-relaxed font-mono overflow-x-auto">
+                  <span className="text-gray-400 dark:text-gray-600">$</span> <span className="text-gray-900 dark:text-gray-100">kairos secrets</span>{'\n'}
+                  {'\n'}
+                  <span className="text-gray-500">  kairos · acme-app › </span><span className="text-green-600 dark:text-green-500">production</span>{'\n'}
+                  <span className="text-gray-300 dark:text-gray-700">  ─────────────────────────────────</span>{'\n'}
+                  <span className="text-gray-400 dark:text-gray-500">  KEY            VALUE</span>{'\n'}
+                  <span className="text-blue-600 dark:text-blue-400">  DATABASE_URL</span><span className="text-gray-900 dark:text-gray-200">   postgres://db:5432</span>{'\n'}
+                  <span className="text-blue-600 dark:text-blue-400">  STRIPE_KEY</span><span className="text-gray-900 dark:text-gray-200">     sk_live_4eC39…</span>{'\n'}
+                  <span className="text-blue-600 dark:text-blue-400">  REDIS_URL</span><span className="text-gray-900 dark:text-gray-200">      redis://cache</span>{'\n'}
+                  <span className="text-gray-300 dark:text-gray-700">  ─────────────────────────────────</span>{'\n'}
+                  <span className="text-gray-500">  3 secrets · </span><span className="text-green-600 dark:text-green-500">decrypted locally</span>
+                </pre>
+              </div>
             </div>
           </div>
         </section>
@@ -118,7 +129,7 @@ export default function LandingPage() {
             { title: 'Multi-device', desc: 'Approve new devices from the web UI. Each device gets its own encrypted key.' },
             { title: 'Deploy tokens', desc: 'Generate scoped tokens for CI/CD. No login, no device, no password.' },
           ].map((f) => (
-            <div key={f.title} className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+            <div key={f.title} className="bg-gray-100 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
               <h3 className="text-gray-900 dark:text-white font-semibold mb-2">{f.title}</h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{f.desc}</p>
             </div>
@@ -142,7 +153,7 @@ export default function LandingPage() {
 
           <p className="text-gray-500 text-sm">
             Need manual install, update instructions, or other platforms?{' '}
-            <Link href="/docs" className="text-indigo-400 hover:text-indigo-300 transition-colors">View full docs →</Link>
+            <Link href="/docs" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition-colors">View full docs →</Link>
           </p>
         </section>
 
@@ -151,14 +162,14 @@ export default function LandingPage() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Deploy tokens</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-8">Pull secrets in CI/CD without logging in. Generate a scoped token per environment from the web UI — secrets stay E2E encrypted.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+            <div className="bg-gray-100 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">GitHub Actions</p>
               <pre className="text-sm text-gray-800 dark:text-gray-200 font-mono whitespace-pre overflow-x-auto">{`- name: Load secrets
   run: kairos secrets -t \${{ secrets.KAIROS_TOKEN }} >> $GITHUB_ENV
 
 - run: npm run build`}</pre>
             </div>
-            <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+            <div className="bg-gray-100 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Docker / any CI</p>
               <pre className="text-sm text-gray-800 dark:text-gray-200 font-mono whitespace-pre overflow-x-auto">{`# inject and run
 kairos run -t $KAIROS_TOKEN -- npm run build
@@ -167,7 +178,7 @@ kairos run -t $KAIROS_TOKEN -- npm run build
 kairos secrets -t $KAIROS_TOKEN -g .env`}</pre>
             </div>
           </div>
-          <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+          <div className="bg-gray-100 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Docker Compose</p>
             <pre className="text-sm text-gray-800 dark:text-gray-200 font-mono whitespace-pre overflow-x-auto">{`kairos secrets -t $KAIROS_TOKEN -g .env && docker compose up`}</pre>
           </div>
@@ -175,21 +186,21 @@ kairos secrets -t $KAIROS_TOKEN -g .env`}</pre>
 
         {/* CTA */}
         <section className="pb-24 text-center">
-          <div className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 md:p-12">
+          <div className="bg-gray-100 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-8 md:p-12">
             {/* Icons row */}
             <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+                <svg className="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                 </svg>
               </div>
-              <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+                <svg className="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
                 </svg>
               </div>
-              <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+                <svg className="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                 </svg>
               </div>
@@ -197,7 +208,7 @@ kairos secrets -t $KAIROS_TOKEN -g .env`}</pre>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Ready to start?</h2>
             <p className="text-gray-600 dark:text-gray-400 mb-8">Create an account, add your secrets, and pull them anywhere.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/login" className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-center">
+              <Link href="/login" className="bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white text-white dark:text-black font-medium px-6 py-3 rounded-lg transition-colors w-full sm:w-auto text-center">
                 Create account
               </Link>
               <Link href="/login" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium px-6 py-3 w-full sm:w-auto text-center">

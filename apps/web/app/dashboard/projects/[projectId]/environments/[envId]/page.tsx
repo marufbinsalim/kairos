@@ -15,6 +15,7 @@ import { encryptSecret, decryptSecret } from '@/lib/crypto/secrets';
 import { selfUnwrapDEK, wrapDEKWithToken } from '@/lib/crypto/dek';
 import { bytesToBase64, base64ToBytes } from '@/lib/crypto/keypair';
 import { AppShell } from '@/components/AppShell';
+import { Toast } from '@/components/Toast';
 import type { Secret } from '@kairos/types';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -119,14 +120,14 @@ function BulkImportModal({
       className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={(e) => { if (!loading && e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl w-full max-w-xl shadow-2xl flex flex-col max-h-[80vh]">
+      <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg w-full max-w-xl shadow-2xl flex flex-col max-h-[80vh]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-200 dark:border-gray-800 shrink-0">
           <h2 className="text-base font-semibold text-gray-900 dark:text-white">Bulk Import Secrets</h2>
           <button
             onClick={onClose}
             disabled={loading}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -138,7 +139,7 @@ function BulkImportModal({
           {!parsed ? (
             <>
               {/* Tabs */}
-              <div className="flex gap-1 bg-gray-100 dark:bg-gray-800/60 p-1 rounded-lg mb-4">
+              <div className="flex gap-1 bg-gray-100 dark:bg-gray-900/60 p-1 rounded-lg mb-4">
                 {(['paste', 'file'] as const).map((t) => (
                   <button
                     key={t}
@@ -160,13 +161,13 @@ function BulkImportModal({
                     onChange={(e) => setText(e.target.value)}
                     placeholder={'DATABASE_URL=postgres://...\nSECRET_KEY=abc123\nAPI_KEY=xyz'}
                     rows={10}
-                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:border-indigo-500 rounded-lg px-3.5 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm font-mono outline-none transition-colors resize-none"
+                    className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:border-gray-400 dark:focus:border-gray-500 rounded-lg px-3.5 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm font-mono outline-none transition-colors resize-none"
                   />
                 </>
               ) : (
                 <div
                   onClick={() => fileRef.current?.click()}
-                  className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 rounded-xl py-12 cursor-pointer transition-colors"
+                  className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 rounded-lg py-12 cursor-pointer transition-colors"
                 >
                   <svg className="w-8 h-8 text-gray-400 dark:text-gray-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
@@ -186,8 +187,8 @@ function BulkImportModal({
               </p>
               <div className="space-y-1.5">
                 {parsed.map((row, i) => (
-                  <div key={i} className="flex items-center gap-3 bg-gray-100 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700/60 rounded-lg px-3 py-2">
-                    <span className="font-mono text-sm text-indigo-600 dark:text-indigo-300 w-40 truncate shrink-0">{row.key}</span>
+                  <div key={i} className="flex items-center gap-3 bg-gray-100 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-700/60 rounded-lg px-3 py-2">
+                    <span className="font-mono text-sm text-gray-900 dark:text-white dark:text-gray-900 dark:text-white w-40 truncate shrink-0">{row.key}</span>
                     <span className="font-mono text-sm text-gray-500 dark:text-gray-400 flex-1 truncate">{row.value || <span className="text-gray-400 dark:text-gray-600 italic">empty</span>}</span>
                     <button
                       onClick={() => removeRow(i)}
@@ -212,14 +213,14 @@ function BulkImportModal({
               <button
                 onClick={() => { setParsed(null); setError(''); }}
                 disabled={loading}
-                className="flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-300 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                className="flex-1 bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 disabled:opacity-50 text-gray-700 dark:text-gray-300 py-2.5 rounded-lg text-sm font-medium transition-colors"
               >
                 Back
               </button>
               <button
                 onClick={handleImport}
                 disabled={loading || !parsed.length}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2.5 rounded-lg text-sm font-semibold transition-colors"
+                className="flex-1 bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed text-white dark:text-black py-2.5 rounded-lg text-sm font-semibold transition-colors"
               >
                 {loading ? 'Importing…' : `Import ${parsed.length} secret${parsed.length !== 1 ? 's' : ''}`}
               </button>
@@ -228,7 +229,7 @@ function BulkImportModal({
             <>
               <button
                 onClick={onClose}
-                className="flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                className="flex-1 bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 py-2.5 rounded-lg text-sm font-medium transition-colors"
               >
                 Cancel
               </button>
@@ -236,7 +237,7 @@ function BulkImportModal({
                 <button
                   onClick={handleParse}
                   disabled={!text.trim()}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2.5 rounded-lg text-sm font-semibold transition-colors"
+                  className="flex-1 bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed text-white dark:text-black py-2.5 rounded-lg text-sm font-semibold transition-colors"
                 >
                   Parse
                 </button>
@@ -316,20 +317,20 @@ function SecretRow({
 
   if (editing) {
     return (
-      <div className="flex items-center gap-3 bg-white dark:bg-gray-900 border border-indigo-500/40 rounded-xl px-5 py-3">
-        <span className="font-mono text-sm text-indigo-600 dark:text-indigo-300 w-40 shrink-0 truncate">{secret.key}</span>
+      <div className="flex items-center gap-3 bg-white dark:bg-gray-950 border border-gray-300 dark:border-gray-600 rounded-lg px-5 py-3">
+        <span className="font-mono text-sm text-gray-900 dark:text-white dark:text-gray-900 dark:text-white w-40 shrink-0 truncate">{secret.key}</span>
         <input
           autoFocus
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') cancelEdit(); }}
-          className="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:border-indigo-500 rounded-lg px-3 py-1.5 text-gray-900 dark:text-white text-sm font-mono outline-none transition-colors"
+          className="flex-1 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:border-gray-400 dark:focus:border-gray-500 rounded-lg px-3 py-1.5 text-gray-900 dark:text-white text-sm font-mono outline-none transition-colors"
         />
         <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={cancelEdit}
             disabled={saving}
-            className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
             title="Cancel"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -359,16 +360,16 @@ function SecretRow({
   }
 
   return (
-    <div className="flex items-center gap-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 rounded-xl px-5 py-3.5 transition-colors group">
+    <div className="flex items-center gap-4 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 rounded-lg px-5 py-3.5 transition-colors group">
       <div className="flex-1 min-w-0 grid grid-cols-2 gap-4">
-        <span className="font-mono text-sm text-indigo-600 dark:text-indigo-300 truncate">{secret.key}</span>
+        <span className="font-mono text-sm text-gray-900 dark:text-white dark:text-gray-900 dark:text-white truncate">{secret.key}</span>
         <span className="font-mono text-sm text-gray-500 dark:text-gray-400 truncate">
           {revealed ? value : '••••••••••••'}
         </span>
       </div>
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button onClick={handleToggle} disabled={!dek} title={revealed ? 'Hide' : 'Reveal'}
-          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 transition-colors">
+          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 disabled:opacity-30 transition-colors">
           {revealed ? (
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
@@ -381,7 +382,7 @@ function SecretRow({
           )}
         </button>
         <button onClick={handleCopy} disabled={!dek} title="Copy value"
-          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 transition-colors">
+          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 disabled:opacity-30 transition-colors">
           {copied ? (
             <svg className="w-3.5 h-3.5 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -393,7 +394,7 @@ function SecretRow({
           )}
         </button>
         <button onClick={startEdit} disabled={!dek} title="Edit value"
-          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 transition-colors">
+          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 disabled:opacity-30 transition-colors">
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
           </svg>
@@ -418,6 +419,13 @@ function DeployTokensSection({ envId, dek }: { envId: string; dek: Uint8Array | 
   const [newToken, setNewToken] = useState<string | null>(null);
   const [isRotation, setIsRotation] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [toast, setToast] = useState('');
+
+  function handleCopyCommand() {
+    if (!newToken) return;
+    navigator.clipboard.writeText(`kairos secrets -t ${newToken}`);
+    setToast('Command copied to clipboard');
+  }
 
   async function handleGenerate() {
     if (!dek) return;
@@ -441,19 +449,21 @@ function DeployTokensSection({ envId, dek }: { envId: string; dek: Uint8Array | 
       <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Deploy Token</h2>
       <p className="text-gray-500 text-sm mb-5">
         Use a token to pull secrets in CI/CD without logging in.{' '}
-        <code className="text-indigo-600 dark:text-indigo-400 text-xs">kairos secrets -t $TOKEN</code>
+        <code className="text-blue-600 dark:text-blue-500 text-xs">kairos secrets -t $TOKEN</code>
       </p>
 
       {newToken && (
-        <div className="mb-5 bg-green-950/30 border border-green-700/40 rounded-xl px-4 py-4">
+        <div className="mb-5 bg-green-950/30 border border-green-700/40 rounded-lg px-4 py-4">
           <p className="text-green-600 dark:text-green-400 text-sm font-medium mb-2">
             {isRotation ? 'Token rotated — copy your new token now.' : 'Token generated — copy it now. You won\'t see it again.'}
           </p>
-          <div className="flex items-center gap-3 bg-gray-100 dark:bg-gray-950 rounded-lg px-3 py-2.5">
-            <code className="text-green-700 dark:text-green-300 font-mono text-xs flex-1 break-all">{newToken}</code>
+          <div className="flex items-center gap-3 bg-gray-100 dark:bg-black rounded-lg px-3 py-2.5">
+            <code className="text-green-700 dark:text-green-300 font-mono text-xs flex-1 break-all">
+              kairos secrets -t {newToken}
+            </code>
             <button
-              onClick={() => navigator.clipboard.writeText(newToken)}
-              className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 shrink-0 transition-colors"
+              onClick={handleCopyCommand}
+              className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800 shrink-0 transition-colors"
             >Copy</button>
           </div>
           <button
@@ -465,8 +475,10 @@ function DeployTokensSection({ envId, dek }: { envId: string; dek: Uint8Array | 
         </div>
       )}
 
+      {toast && <Toast message={toast} onDone={() => setToast('')} />}
+
       {token ? (
-        <div className="flex items-center gap-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-5 py-3.5">
+        <div className="flex items-center gap-4 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg px-5 py-3.5">
           <div className="flex-1 min-w-0">
             <p className="text-sm text-gray-900 dark:text-white font-medium">Deploy token</p>
             <p className="text-xs text-gray-500 mt-0.5">Generated {new Date(token.createdAt).toLocaleDateString()}</p>
@@ -475,7 +487,7 @@ function DeployTokensSection({ envId, dek }: { envId: string; dek: Uint8Array | 
             <button
               onClick={handleGenerate}
               disabled={!dek || generating}
-              className="text-xs text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 disabled:opacity-40 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 transition-colors"
+              className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400   disabled:opacity-40 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 transition-colors"
             >
               {generating ? 'Rotating…' : 'Rotate'}
             </button>
@@ -493,7 +505,7 @@ function DeployTokensSection({ envId, dek }: { envId: string; dek: Uint8Array | 
           <button
             onClick={handleGenerate}
             disabled={!dek || generating}
-            className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+            className="bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed text-white dark:text-black px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
           >
             {generating ? 'Generating…' : 'Generate token'}
           </button>
@@ -588,7 +600,7 @@ export default function SecretsPage({ params }: { params: { projectId: string; e
             onClick={() => setBulkOpen(true)}
             disabled={!dekReady}
             title={!dekReady ? 'Encryption key not loaded' : undefined}
-            className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
@@ -599,8 +611,8 @@ export default function SecretsPage({ params }: { params: { projectId: string; e
 
         {/* Status banners */}
         {syncing && (
-          <div className="mb-5 flex items-center gap-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3">
-            <svg className="animate-spin w-4 h-4 text-indigo-500 dark:text-indigo-400" fill="none" viewBox="0 0 24 24">
+          <div className="mb-5 flex items-center gap-2 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-3">
+            <svg className="animate-spin w-4 h-4 text-blue-600 dark:text-blue-500" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
@@ -608,7 +620,7 @@ export default function SecretsPage({ params }: { params: { projectId: string; e
           </div>
         )}
         {!dekReady && !syncing && !privateKey && (
-          <div className="mb-5 flex items-start gap-3 bg-yellow-950/20 border border-yellow-700/40 rounded-xl px-4 py-3">
+          <div className="mb-5 flex items-start gap-3 bg-yellow-950/20 border border-yellow-700/40 rounded-lg px-4 py-3">
             <svg className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
             </svg>
@@ -620,7 +632,7 @@ export default function SecretsPage({ params }: { params: { projectId: string; e
           </div>
         )}
         {!dekReady && !syncing && privateKey && (
-          <div className="mb-5 flex items-start gap-3 bg-orange-950/20 border border-orange-700/40 rounded-xl px-4 py-3">
+          <div className="mb-5 flex items-start gap-3 bg-orange-950/20 border border-orange-700/40 rounded-lg px-4 py-3">
             <svg className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
             </svg>
@@ -631,14 +643,14 @@ export default function SecretsPage({ params }: { params: { projectId: string; e
         )}
 
         {/* Add secret form */}
-        <form onSubmit={handleAdd} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 mb-6">
+        <form onSubmit={handleAdd} className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg p-4 mb-6">
           <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Add Secret</p>
           <div className="flex gap-3">
             <input
               placeholder="KEY"
               value={newKey}
               onChange={(e) => setNewKey(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ''))}
-              className="w-40 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:border-indigo-500 rounded-lg px-3.5 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm font-mono outline-none transition-colors"
+              className="w-40 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:border-gray-400 dark:focus:border-gray-500 rounded-lg px-3.5 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm font-mono outline-none transition-colors"
               required
             />
             <input
@@ -646,13 +658,13 @@ export default function SecretsPage({ params }: { params: { projectId: string; e
               value={newValue}
               onChange={(e) => setNewValue(e.target.value)}
               type="password"
-              className="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:border-indigo-500 rounded-lg px-3.5 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm outline-none transition-colors"
+              className="flex-1 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:border-gray-400 dark:focus:border-gray-500 rounded-lg px-3.5 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm outline-none transition-colors"
               required
             />
             <button
               type="submit"
               disabled={!dekReady || !newKey || !newValue}
-              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+              className="flex items-center gap-2 bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed text-white dark:text-black px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -666,11 +678,11 @@ export default function SecretsPage({ params }: { params: { projectId: string; e
         {isLoading ? (
           <div className="space-y-2">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-14 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl animate-pulse" />
+              <div key={i} className="h-14 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg animate-pulse" />
             ))}
           </div>
         ) : !secrets || secrets.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-14 text-center border border-dashed border-gray-200 dark:border-gray-800 rounded-xl">
+          <div className="flex flex-col items-center justify-center py-14 text-center border border-dashed border-gray-200 dark:border-gray-800 rounded-lg">
             <svg className="w-8 h-8 text-gray-300 dark:text-gray-700 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
             </svg>

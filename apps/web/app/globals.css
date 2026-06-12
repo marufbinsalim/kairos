@@ -5,5 +5,26 @@
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    @apply bg-gray-900 text-white dark:bg-white dark:text-black;
+  }
+
+  /* Hairline scrollbars, Vercel-style */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(163 163 163 / 0.4) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  *::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-gray-300 dark:bg-gray-700;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
   }
 }

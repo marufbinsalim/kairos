@@ -81,7 +81,7 @@ function RegenerateMnemonicSection() {
   const words = newMnemonic.split(' ').filter(Boolean);
 
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
+    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg p-6">
       <div className="flex items-center gap-3 mb-5">
         <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
           <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -104,7 +104,7 @@ function RegenerateMnemonicSection() {
               Recovery phrase updated successfully.
             </div>
           )}
-          <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 mb-5">
+          <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4 mb-5">
             <p className="text-amber-700 dark:text-amber-300 text-xs leading-relaxed">
               Generating a new phrase will <strong>invalidate your old one</strong>. Save the new phrase immediately — it is the only way to unlock your secrets on a new browser or device.
             </p>
@@ -120,7 +120,7 @@ function RegenerateMnemonicSection() {
 
       {phase === 'confirm' && (
         <div>
-          <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-4 mb-5">
+          <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-4 mb-5">
             <p className="text-red-300/90 text-sm leading-relaxed">
               Your current recovery phrase will be <strong>permanently replaced</strong>. Make sure you no longer need it before continuing.
             </p>
@@ -128,7 +128,7 @@ function RegenerateMnemonicSection() {
           <div className="flex gap-3">
             <button
               onClick={() => setPhase('idle')}
-              className="px-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-2.5 rounded-lg text-sm font-medium transition-colors"
+              className="px-4 bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 py-2.5 rounded-lg text-sm font-medium transition-colors"
             >
               Cancel
             </button>
@@ -146,7 +146,7 @@ function RegenerateMnemonicSection() {
         <div>
           <div className="grid grid-cols-3 gap-2 mb-4">
             {words.map((word, i) => (
-              <div key={i} className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2">
+              <div key={i} className="flex items-center gap-2 bg-gray-100 dark:bg-gray-900 rounded-lg px-3 py-2">
                 <span className="text-gray-500 text-xs w-5 text-right flex-shrink-0">{i + 1}.</span>
                 <span className="text-gray-900 dark:text-white text-sm font-mono">{word}</span>
               </div>
@@ -156,7 +156,7 @@ function RegenerateMnemonicSection() {
           <div className="flex gap-2 mb-5">
             <button
               onClick={handleCopy}
-              className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-xs font-medium transition-colors"
+              className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-xs font-medium transition-colors"
             >
               {copied ? (
                 <><svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg><span className="text-green-400">Copied</span></>
@@ -166,7 +166,7 @@ function RegenerateMnemonicSection() {
             </button>
             <button
               onClick={handleDownload}
-              className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-xs font-medium transition-colors"
+              className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-xs font-medium transition-colors"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
               Download
@@ -178,7 +178,7 @@ function RegenerateMnemonicSection() {
               type="checkbox"
               checked={confirmed}
               onChange={(e) => setConfirmed(e.target.checked)}
-              className="mt-0.5 w-4 h-4 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-indigo-500 focus:ring-indigo-500/50 flex-shrink-0"
+              className="mt-0.5 w-4 h-4 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-gray-300 dark:focus:ring-gray-700 flex-shrink-0"
             />
             <span className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
               I have saved the new recovery phrase and understand my old phrase no longer works.
@@ -198,14 +198,14 @@ function RegenerateMnemonicSection() {
             <button
               onClick={() => { setPhase('idle'); setNewMnemonic(''); }}
               disabled={loading}
-              className="px-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-300 py-2.5 rounded-lg text-sm font-medium transition-colors"
+              className="px-4 bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 disabled:opacity-50 text-gray-700 dark:text-gray-300 py-2.5 rounded-lg text-sm font-medium transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
               disabled={!confirmed || loading}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2.5 rounded-lg text-sm font-semibold transition-colors"
+              className="flex-1 bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed text-white dark:text-black py-2.5 rounded-lg text-sm font-semibold transition-colors"
             >
               {loading ? 'Saving...' : 'Save new phrase'}
             </button>

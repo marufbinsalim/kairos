@@ -49,14 +49,14 @@ function CliAuthInner() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="flex items-center gap-2.5 mb-8">
           <KairosLogo size={32} />
           <span className="text-gray-900 dark:text-white font-semibold text-lg tracking-tight">kairos</span>
         </div>
 
-        <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-xl dark:shadow-2xl text-center">
+        <div className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-8 shadow-xl dark:shadow-2xl text-center">
           {state === 'confirm' && (
             <>
               <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">CLI sign-in request</h1>
@@ -65,8 +65,8 @@ function CliAuthInner() {
                 Only approve if the code below matches your terminal.
               </p>
 
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-4 mb-6">
-                <span className="text-2xl font-mono font-bold tracking-[0.3em] text-indigo-600 dark:text-indigo-400">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg py-4 mb-6">
+                <span className="text-2xl font-mono font-bold tracking-[0.3em] text-blue-600 dark:text-blue-500">
                   {code || '———'}
                 </span>
               </div>
@@ -75,14 +75,14 @@ function CliAuthInner() {
                 <button
                   onClick={() => handle('deny')}
                   disabled={busy || !code}
-                  className="flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-300 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                  className="flex-1 bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 disabled:opacity-50 text-gray-700 dark:text-gray-300 py-2.5 rounded-lg text-sm font-medium transition-colors"
                 >
                   Deny
                 </button>
                 <button
                   onClick={() => handle('approve')}
                   disabled={busy || !code}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white py-2.5 rounded-xl text-sm font-semibold transition-colors"
+                  className="flex-1 bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white disabled:opacity-50 text-white dark:text-black py-2.5 rounded-lg text-sm font-semibold transition-colors"
                 >
                   {busy ? 'Working…' : 'Approve'}
                 </button>
@@ -98,9 +98,15 @@ function CliAuthInner() {
                 </svg>
               </div>
               <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Terminal signed in</h1>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
                 You can close this tab and return to your terminal.
               </p>
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="w-full bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white text-white dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors"
+              >
+                Go to dashboard
+              </button>
             </>
           )}
 
@@ -112,9 +118,15 @@ function CliAuthInner() {
                 </svg>
               </div>
               <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Request denied</h1>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
                 The terminal was not signed in. You can close this tab.
               </p>
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="w-full bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 py-2.5 rounded-lg text-sm font-medium transition-colors"
+              >
+                Go to dashboard
+              </button>
             </>
           )}
 

@@ -76,11 +76,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               href={item.href}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 active
-                  ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 ring-1 ring-indigo-500/20'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800/60'
+                  ? 'bg-gray-100 dark:bg-gray-900/80 text-gray-900 dark:text-white'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900/60'
               }`}
             >
-              <span className={active ? 'text-indigo-500 dark:text-indigo-400' : 'text-gray-400 dark:text-gray-500'}>{item.icon}</span>
+              <span className={active ? 'text-blue-600 dark:text-blue-500' : 'text-gray-400 dark:text-gray-500'}>{item.icon}</span>
               {item.label}
             </Link>
           );
@@ -92,7 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Theme toggle */}
         <button
           onClick={toggle}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800/60 transition-colors"
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900/60 transition-colors"
         >
           {theme === 'dark' ? (
             <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -113,7 +113,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800/60 transition-colors"
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900/60 transition-colors"
         >
           <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
@@ -126,9 +126,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <VaultGuard>
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden">
+    <div className="flex h-screen bg-gray-50 dark:bg-black overflow-hidden">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-[220px] flex-shrink-0 flex-col bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800/60">
+      <aside className="hidden md:flex w-[220px] flex-shrink-0 flex-col bg-white dark:bg-black border-r border-gray-200 dark:border-gray-800/60">
         <SidebarContent />
       </aside>
 
@@ -136,7 +136,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-[220px] flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-50">
+          <aside className="absolute left-0 top-0 bottom-0 w-[220px] flex flex-col bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 z-50">
             <SidebarContent />
           </aside>
         </div>
@@ -145,10 +145,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-h-0 min-w-0">
         {/* Mobile top bar */}
-        <div className="md:hidden flex items-center justify-between px-4 h-14 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800/60 flex-shrink-0">
+        <div className="md:hidden flex items-center justify-between px-4 h-14 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800/60 flex-shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -160,7 +160,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <button
             onClick={toggle}
-            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
           >
             {theme === 'dark' ? (
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

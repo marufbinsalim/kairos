@@ -118,14 +118,14 @@ export function VaultGuard({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="flex items-center gap-2.5 mb-8">
           <KairosLogo size={32} />
           <span className="text-gray-900 dark:text-white font-semibold text-lg tracking-tight">kairos</span>
         </div>
 
-        <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-xl dark:shadow-2xl">
+        <div className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-8 shadow-xl dark:shadow-2xl">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
               <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -149,7 +149,7 @@ export function VaultGuard({ children }: { children: React.ReactNode }) {
               value={phrase}
               onChange={(e) => setPhrase(e.target.value)}
               rows={3}
-              className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white text-sm font-mono placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors resize-none"
+              className="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white text-sm font-mono placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-700 focus:border-gray-400 dark:focus:border-gray-500 transition-colors resize-none"
               placeholder="correct horse battery staple …"
               autoFocus
               required
@@ -165,7 +165,7 @@ export function VaultGuard({ children }: { children: React.ReactNode }) {
             <button
               type="submit"
               disabled={busy || !phrase.trim() || !me}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2.5 rounded-xl text-sm font-semibold transition-colors"
+              className="w-full bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed text-white dark:text-black py-2.5 rounded-lg text-sm font-semibold transition-colors"
             >
               {busy ? 'Unlocking…' : 'Unlock vault'}
             </button>

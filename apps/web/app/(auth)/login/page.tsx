@@ -37,7 +37,7 @@ type Step = 'signin' | 'ceremony' | 'restore';
 
 function MnemonicWord({ index, word }: { index: number; word: string }) {
   return (
-    <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2">
+    <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-900 rounded-lg px-3 py-2">
       <span className="text-gray-500 text-xs w-5 text-right flex-shrink-0">{index + 1}.</span>
       <span className="text-gray-900 dark:text-white text-sm font-mono">{word}</span>
     </div>
@@ -268,7 +268,7 @@ function LoginInner() {
   const words = mnemonic.split(' ');
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2.5">
@@ -277,7 +277,7 @@ function LoginInner() {
           </div>
           <button
             onClick={toggle}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
           >
             {theme === 'dark' ? (
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -292,7 +292,7 @@ function LoginInner() {
         </div>
 
         {step === 'signin' && (
-          <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-xl dark:shadow-2xl">
+          <div className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-8 shadow-xl dark:shadow-2xl">
             <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Welcome to Kairos</h1>
             <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
               End-to-end encrypted secrets. Sign in with Google to continue.
@@ -319,7 +319,7 @@ function LoginInner() {
         )}
 
         {step === 'ceremony' && (
-          <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-xl dark:shadow-2xl">
+          <div className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-8 shadow-xl dark:shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
                 <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -332,7 +332,7 @@ function LoginInner() {
               </div>
             </div>
 
-            <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 mb-5">
+            <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4 mb-5">
               <p className="text-amber-700 dark:text-amber-300/90 text-xs leading-relaxed">
                 This 12-word phrase is the <strong>only way</strong> to access your secrets on a new browser
                 or device. There is no password. If you lose this phrase and clear this browser,{' '}
@@ -349,7 +349,7 @@ function LoginInner() {
             <div className="flex gap-2 mb-5">
               <button
                 onClick={handleCopy}
-                className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-xs font-medium transition-colors"
+                className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-xs font-medium transition-colors"
               >
                 {copied ? (
                   <><svg className="w-3.5 h-3.5 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg><span className="text-green-500 dark:text-green-400">Copied</span></>
@@ -359,7 +359,7 @@ function LoginInner() {
               </button>
               <button
                 onClick={handleDownload}
-                className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-xs font-medium transition-colors"
+                className="flex-1 flex items-center justify-center gap-1.5 bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-xs font-medium transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                 Download
@@ -371,7 +371,7 @@ function LoginInner() {
                 type="checkbox"
                 checked={confirmed}
                 onChange={(e) => setConfirmed(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-indigo-500 focus:ring-indigo-500/50 flex-shrink-0"
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-gray-300 dark:focus:ring-gray-700 flex-shrink-0"
               />
               <span className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
                 I have saved my recovery phrase in a safe place and understand that losing it means
@@ -384,7 +384,7 @@ function LoginInner() {
             <button
               onClick={handleCeremonyConfirm}
               disabled={!confirmed || busy}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2.5 rounded-xl text-sm font-semibold transition-colors"
+              className="w-full bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed text-white dark:text-black py-2.5 rounded-lg text-sm font-semibold transition-colors"
             >
               {busy ? (
                 <span className="flex items-center justify-center gap-2"><Spinner />Setting up…</span>
@@ -394,7 +394,7 @@ function LoginInner() {
         )}
 
         {step === 'restore' && (
-          <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-xl dark:shadow-2xl">
+          <div className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-8 shadow-xl dark:shadow-2xl">
             <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Unlock on this browser</h1>
             <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
               This browser doesn&apos;t hold your encryption key yet. Enter your 12-word recovery phrase
@@ -406,7 +406,7 @@ function LoginInner() {
                 value={phrase}
                 onChange={(e) => setPhrase(e.target.value)}
                 rows={3}
-                className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white text-sm font-mono placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors resize-none"
+                className="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white text-sm font-mono placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-700 focus:border-gray-400 dark:focus:border-gray-500 transition-colors resize-none"
                 placeholder="correct horse battery staple …"
                 autoFocus
                 required
@@ -415,7 +415,7 @@ function LoginInner() {
               <button
                 type="submit"
                 disabled={busy || !phrase.trim()}
-                className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2.5 rounded-xl text-sm font-semibold transition-colors"
+                className="w-full bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed text-white dark:text-black py-2.5 rounded-lg text-sm font-semibold transition-colors"
               >
                 {busy ? (
                   <span className="flex items-center justify-center gap-2"><Spinner />Restoring…</span>
