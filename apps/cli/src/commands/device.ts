@@ -1,31 +1,33 @@
 import { Args } from '@oclif/core';
+import chalk from 'chalk';
 import { BaseCommand } from '../lib/base-command';
 import { api } from '../lib/api';
 import { loadConfig, saveConfig, loadAuth } from '../lib/config';
-import { ok } from '../lib/ui';
-import chalk from 'chalk';
+import { spinner, CliError } from '../lib/ui';
 
 export default class Device extends BaseCommand {
   static description = 'Set a name for this device';
   static args = {
     name: Args.string({ required: true, description: 'Device name' }),
   };
+  static examples = ['kairos device work-laptop'];
 
   async run() {
     const { args } = await this.parse(Device);
     const auth = loadAuth();
-    if (!auth) this.error('Not logged in. Run: kairos login');
+    if (!auth) throw new CliError('Not logged in.', 'kairos login');
     const config = loadConfig();
 
     const deviceIds = config.deviceIds ?? (config.deviceId ? [config.deviceId] : []);
-    if (!deviceIds.length) this.error('No devices registered. Run: kairos switch first.');
+    if (!deviceIds.length) throw new CliError('This machine has no device registrations yet.', 'kairos switch');
 
+    console.log();
+    const spin = spinner('Renaming device…');
     const label = `CLI on ${process.platform} - "${args.name}"`;
     await Promise.all(deviceIds.map((id) => api.patch(`/devices/${id}/label`, { label }).catch(() => {})));
     saveConfig({ deviceName: args.name });
 
-    console.log();
-    ok(`Device named: ${chalk.cyan(args.name)}`);
+    spin.succeed(`Device renamed to ${chalk.cyan(args.name)}`);
     console.log();
   }
 }

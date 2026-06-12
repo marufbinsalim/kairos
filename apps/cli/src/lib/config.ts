@@ -31,7 +31,11 @@ interface AuthData {
 
 export function loadConfig(): KairosConfig {
   if (!existsSync(CONFIG_PATH)) return {};
-  return JSON.parse(readFileSync(CONFIG_PATH, 'utf8')) as KairosConfig;
+  try {
+    return JSON.parse(readFileSync(CONFIG_PATH, 'utf8')) as KairosConfig;
+  } catch {
+    return {};
+  }
 }
 
 export function saveConfig(config: Partial<KairosConfig>): void {
@@ -42,7 +46,14 @@ export function saveConfig(config: Partial<KairosConfig>): void {
 
 export function loadAuth(): AuthData | null {
   if (!existsSync(AUTH_PATH)) return null;
-  return JSON.parse(readFileSync(AUTH_PATH, 'utf8'));
+  try {
+    const data = JSON.parse(readFileSync(AUTH_PATH, 'utf8')) as Partial<AuthData>;
+    // A cleared session is written as {} — treat anything without a token as logged out
+    if (!data.accessToken) return null;
+    return data as AuthData;
+  } catch {
+    return null;
+  }
 }
 
 export function saveAuth(data: AuthData): void {

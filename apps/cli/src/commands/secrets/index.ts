@@ -4,6 +4,7 @@ import SecretsList from './list';
 
 export default class SecretsIndex extends BaseCommand {
   static description = 'Decrypt and display secrets, or write to file with -g';
+  static examples = ['kairos secrets', 'kairos secrets -g', 'kairos secrets -g .env.local'];
   static flags = {
     generate: Flags.boolean({ char: 'g', description: 'Write secrets to file instead of printing' }),
     token: Flags.string({ char: 't', description: 'Deploy token (or set KAIROS_TOKEN env var)', env: 'KAIROS_TOKEN' }),

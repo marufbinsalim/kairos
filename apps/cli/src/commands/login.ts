@@ -1,55 +1,67 @@
+import inquirer from 'inquirer';
+import chalk from 'chalk';
 import { BaseCommand } from '../lib/base-command';
-import { createInterface } from 'readline';
 import { api } from '../lib/api';
-import { saveAuth } from '../lib/config';
-import { header, ok } from '../lib/ui';
-
-function prompt(question: string, hidden = false): Promise<string> {
-  return new Promise((resolve) => {
-    if (hidden && process.stdin.setRawMode) {
-      const rl = createInterface({ input: process.stdin, output: process.stdout });
-      process.stdout.write(question);
-      process.stdin.setRawMode(true);
-      process.stdin.resume();
-      let answer = '';
-      process.stdin.on('data', function handler(char) {
-        const c = char.toString();
-        if (c === '\r' || c === '\n') {
-          process.stdin.setRawMode!(false);
-          process.stdin.removeListener('data', handler);
-          process.stdout.write('\n');
-          rl.close();
-          resolve(answer);
-        } else if (c === '') {
-          process.exit();
-        } else if (c === '\x7f') {
-          answer = answer.slice(0, -1);
-        } else {
-          answer += c;
-        }
-      });
-    } else {
-      const rl = createInterface({ input: process.stdin, output: process.stdout });
-      rl.question(question, (answer) => { rl.close(); resolve(answer); });
-    }
-  });
-}
+import { saveAuth, loadAuth } from '../lib/config';
+import { spinner, nextSteps, info, sym } from '../lib/ui';
 
 export default class Login extends BaseCommand {
   static description = 'Log in to Kairos';
+  protected static skipCalibration = true;
 
   async run() {
-    const email = await prompt('  Email: ');
-    const pass = await prompt('  Password: ', true);
+    const existing = loadAuth();
+    console.log();
+    console.log('  ' + chalk.bold.cyan('kairos') + chalk.dim(` ${sym.bullet} sign in`));
+    if (existing?.email) info(`Currently signed in as ${chalk.dim(existing.email)} — signing in again will replace this session.`);
+    console.log();
 
+    const { email } = await inquirer.prompt<{ email: string }>([
+      {
+        type: 'input',
+        name: 'email',
+        message: 'Email',
+        prefix: ' ' + chalk.cyan(sym.pointer),
+        validate: (v: string) => /\S+@\S+\.\S+/.test(v.trim()) || 'Enter a valid email address',
+        filter: (v: string) => v.trim().toLowerCase(),
+      },
+    ]);
+    const { password } = await inquirer.prompt<{ password: string }>([
+      {
+        type: 'password',
+        name: 'password',
+        message: 'Password',
+        mask: '•',
+        prefix: ' ' + chalk.cyan(sym.pointer),
+        validate: (v: string) => v.length > 0 || 'Password is required',
+      },
+    ]);
+
+    console.log();
+    const spin = spinner('Signing in…');
     try {
-      const result = await api.post<{ accessToken: string; userId: string }>('/auth/login', { email, password: pass });
+      const result = await api.post<{ accessToken: string; userId: string }>('/auth/login', {
+        email,
+        password,
+      });
       saveAuth({ accessToken: result.accessToken, userId: result.userId, email });
-      header();
-      ok(`Logged in as ${email}`);
-      console.log();
-    } catch (e: any) {
-      this.error(`Login failed: ${e.message}`);
+      spin.succeed(`Signed in as ${chalk.bold(email)}`);
+    } catch (e: unknown) {
+      const status = (e as { status?: number }).status;
+      spin.fail(
+        status === 401 || status === 400
+          ? 'Invalid email or password.'
+          : (e as Error).message,
+      );
+      this.exit(1);
     }
+
+    console.log();
+    nextSteps([
+      ['kairos switch', 'pick a project & environment'],
+      ['kairos secrets', 'view decrypted secrets'],
+      ['kairos run -- <cmd>', 'run a command with secrets injected'],
+    ]);
+    console.log();
   }
 }

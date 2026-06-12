@@ -1,43 +1,62 @@
+import chalk from 'chalk';
 import { BaseCommand } from '../../lib/base-command';
 import { api } from '../../lib/api';
 import { loadConfig } from '../../lib/config';
-import { header, divider } from '../../lib/ui';
-import chalk from 'chalk';
+import { header, divider, spinner, nextSteps, sym } from '../../lib/ui';
 
 export default class EnvironmentsList extends BaseCommand {
   static description = 'List all environments across all projects';
 
   async run() {
-    const envs = await api.get<Array<{ id: string; name: string; projectName?: string }>>('/environments');
+    const spin = spinner('Loading environments…');
+    let envs: Array<{ id: string; name: string; projectName?: string }>;
+    try {
+      envs = await api.get('/environments');
+    } catch (e) {
+      spin.stop();
+      throw e;
+    }
+    spin.stop();
+
     const config = loadConfig();
 
     header();
 
     if (!envs.length) {
-      console.log(chalk.dim('  No environments yet. Create one in the web UI.\n'));
+      console.log(chalk.dim('  No environments yet. Create one in the web dashboard.'));
+      console.log();
       return;
     }
 
     const byProject = new Map<string, typeof envs>();
     for (const e of envs) {
-      const key = e.projectName ?? 'Unknown Project';
+      const key = e.projectName ?? 'Unknown project';
       if (!byProject.has(key)) byProject.set(key, []);
       byProject.get(key)!.push(e);
     }
 
     divider();
+    let first = true;
     for (const [projectName, projectEnvs] of byProject) {
-      console.log(`  ${chalk.dim('project')} ${chalk.bold(projectName)}`);
+      if (!first) console.log();
+      first = false;
+      console.log('  ' + chalk.bold.white(projectName));
       for (const e of projectEnvs) {
-        const isCurrent = e.id === config.defaultEnvironmentId;
+        const isActive = e.id === config.defaultEnvironmentId;
         console.log(
-          `    ${isCurrent ? chalk.cyan('▶') : chalk.dim('·')}  ${chalk.bold(e.name).padEnd(28)}` +
-          chalk.dim(e.id.slice(0, 8) + '…') +
-          (isCurrent ? '  ' + chalk.cyan('[active]') : ''),
+          '    ' +
+            (isActive ? chalk.green(sym.on) : chalk.dim(sym.off)) +
+            ' ' +
+            (isActive ? chalk.bold.green(e.name.padEnd(28)) : chalk.white(e.name.padEnd(28))) +
+            chalk.dim(e.id.slice(0, 8) + '…') +
+            (isActive ? chalk.green('  active') : ''),
         );
       }
     }
     divider();
-    console.log(chalk.dim(`  ${envs.length} environment${envs.length !== 1 ? 's' : ''}\n`));
+    console.log('  ' + chalk.dim(`${envs.length} environment${envs.length !== 1 ? 's' : ''}`));
+    console.log();
+    nextSteps([['kairos switch', 'change the active environment']]);
+    console.log();
   }
 }

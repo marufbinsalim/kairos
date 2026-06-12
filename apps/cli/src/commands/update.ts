@@ -4,6 +4,8 @@ import { createWriteStream, mkdirSync, unlinkSync } from 'fs';
 import * as https from 'https';
 import { homedir, platform } from 'os';
 import { join } from 'path';
+import chalk from 'chalk';
+import { spinner, ok, err, hint, sym } from '../lib/ui';
 
 const REPO = 'marufbinsalim/kairos';
 
@@ -13,22 +15,24 @@ export default class Update extends Command {
   async run() {
     const current = `v${this.config.version}`;
 
-    process.stdout.write('  Checking for updates...');
+    console.log();
+    let spin = spinner('Checking for updates…');
     let latest: string;
     try {
       latest = await fetchLatestTag();
     } catch {
-      console.log('\n  Failed to reach GitHub. Check your connection.');
+      spin.fail('Could not reach GitHub. Check your connection and try again.');
+      this.exit(1);
       return;
     }
-    console.log('');
 
     if (current === latest) {
-      console.log(`  kairos ${current} is already up to date.\n`);
+      spin.succeed(`kairos ${chalk.bold(current)} is up to date`);
+      console.log();
       return;
     }
 
-    console.log(`  Updating ${current} → ${latest}...\n`);
+    spin.update(`Updating ${chalk.dim(current)} ${sym.arrow} ${chalk.bold.green(latest)}…`);
 
     const os = platform();
     const arch = process.arch === 'arm64' ? 'arm64' : 'x64';
@@ -38,11 +42,10 @@ export default class Update extends Command {
     const tmp = join(os === 'win32' ? (process.env.TEMP ?? 'C:\\Temp') : '/tmp', 'kairos-update.tar.gz');
 
     try {
-      process.stdout.write('  Downloading...');
+      spin.update(`Downloading ${chalk.bold(latest)}…`);
       await download(url, tmp);
-      console.log(' done');
 
-      process.stdout.write('  Installing...');
+      spin.update('Installing…');
       mkdirSync(installDir, { recursive: true });
 
       if (os === 'win32') {
@@ -55,13 +58,17 @@ export default class Update extends Command {
         mkdirSync(binDir, { recursive: true });
         execSync(`ln -sf "${join(installDir, 'bin', 'kairos')}" "${join(binDir, 'kairos')}"`, { stdio: 'pipe' });
       }
-      console.log(' done');
 
       unlinkSync(tmp);
-      console.log(`\n  kairos ${latest} installed. Restart your terminal if the version doesn't update.\n`);
+      spin.succeed(`kairos ${chalk.bold.green(latest)} installed`);
+      hint("Restart your terminal if the version doesn't update.");
+      console.log();
     } catch (e) {
-      try { unlinkSync(tmp); } catch {}
-      this.error(`Update failed: ${(e as Error).message}`);
+      try { unlinkSync(tmp); } catch { /* already gone */ }
+      spin.stop();
+      err(`Update failed: ${(e as Error).message}`);
+      console.log();
+      this.exit(1);
     }
   }
 }
@@ -85,7 +92,13 @@ function fetchLatestTag(): Promise<string> {
         let data = '';
         res.on('data', (chunk) => { data += chunk; });
         res.on('end', () => {
-          try { resolve(JSON.parse(data).tag_name); } catch { reject(new Error('Failed to parse response')); }
+          try {
+            const tag = (JSON.parse(data) as { tag_name?: string }).tag_name;
+            if (!tag) { reject(new Error('No release found')); return; }
+            resolve(tag);
+          } catch {
+            reject(new Error('Failed to parse response'));
+          }
         });
       },
     ).on('error', reject);
