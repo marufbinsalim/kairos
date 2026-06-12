@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from './store';
 import type {
-  AuthResponse, Device, Project, Environment, Secret, SyncPayload,
+  AuthResponse, MeResponse, SetupKeysArgs, Device, Project, Environment, Secret, SyncPayload,
   RegisterDeviceArgs, DeviceResponse, CompleteRegArgs, ApprovalArgs,
   UpsertSecretArgs,
-  ChangePasswordArgs, UpdateMnemonicArgs, RecoveryInitResponse, ResetWithMnemonicArgs,
+  UpdateMnemonicArgs,
   DeployToken, CreateDeployTokenArgs,
   RenameProjectArgs, RenameEnvironmentArgs,
 } from '@kairos/types';
@@ -22,11 +22,20 @@ export const api = createApi({
   }),
   tagTypes: ['Device', 'Project', 'Environment', 'Secret', 'DeployToken'],
   endpoints: (build) => ({
-    register: build.mutation<AuthResponse, { email: string; password: string; encryptedPrivateKey?: string; mnemonicEncryptedPrivateKey?: string; publicKey?: string }>({
-      query: (body) => ({ url: '/auth/register', method: 'POST', body }),
+    googleLogin: build.mutation<AuthResponse, { idToken: string }>({
+      query: (body) => ({ url: '/auth/google', method: 'POST', body }),
     }),
-    login: build.mutation<AuthResponse, { email: string; password: string }>({
-      query: (body) => ({ url: '/auth/login', method: 'POST', body }),
+    getMe: build.query<MeResponse, void>({
+      query: () => '/auth/me',
+    }),
+    setupKeys: build.mutation<{ success: boolean }, SetupKeysArgs>({
+      query: (body) => ({ url: '/auth/setup-keys', method: 'POST', body }),
+    }),
+    cliApprove: build.mutation<{ success: boolean }, { code: string }>({
+      query: (body) => ({ url: '/auth/cli/approve', method: 'POST', body }),
+    }),
+    cliDeny: build.mutation<{ success: boolean }, { code: string }>({
+      query: (body) => ({ url: '/auth/cli/deny', method: 'POST', body }),
     }),
     logout: build.mutation<void, void>({
       query: () => ({ url: '/auth/logout', method: 'POST' }),
@@ -113,17 +122,8 @@ export const api = createApi({
       query: ({ environmentId, deviceId }) =>
         `/sync/${environmentId}?deviceId=${deviceId}`,
     }),
-    changePassword: build.mutation<{ message: string }, ChangePasswordArgs>({
-      query: (body) => ({ url: '/auth/change-password', method: 'PATCH', body }),
-    }),
     updateMnemonic: build.mutation<{ message: string }, UpdateMnemonicArgs>({
       query: (body) => ({ url: '/auth/update-mnemonic', method: 'PATCH', body }),
-    }),
-    recoveryInit: build.mutation<RecoveryInitResponse, { email: string }>({
-      query: (body) => ({ url: '/auth/recovery-init', method: 'POST', body }),
-    }),
-    resetWithMnemonic: build.mutation<{ message: string }, ResetWithMnemonicArgs>({
-      query: (body) => ({ url: '/auth/reset-with-mnemonic', method: 'POST', body }),
     }),
     getDeployToken: build.query<DeployToken | null, string>({
       query: (environmentId) => `/deploy-tokens?environmentId=${environmentId}`,
@@ -149,7 +149,8 @@ export const api = createApi({
 });
 
 export const {
-  useRegisterMutation, useLoginMutation, useLogoutMutation,
+  useGoogleLoginMutation, useGetMeQuery, useSetupKeysMutation, useLogoutMutation,
+  useCliApproveMutation, useCliDenyMutation,
   useRegisterDeviceMutation, useCompleteRegistrationMutation,
   useListPendingDevicesQuery, useCompleteApprovalMutation,
   useListDevicesQuery, useRevokeDeviceMutation,
@@ -157,8 +158,7 @@ export const {
   useCreateEnvironmentMutation, useListEnvironmentsQuery, useListAllEnvironmentsQuery, useDeleteEnvironmentMutation,
   useListSecretsQuery, useUpsertSecretMutation, useDeleteSecretMutation,
   useSyncEnvironmentQuery,
-  useChangePasswordMutation, useUpdateMnemonicMutation,
-  useRecoveryInitMutation, useResetWithMnemonicMutation,
+  useUpdateMnemonicMutation,
   useGetDeployTokenQuery, useCreateDeployTokenMutation,
   useRevokeDeployTokenMutation,
   useRenameProjectMutation, useRenameEnvironmentMutation,

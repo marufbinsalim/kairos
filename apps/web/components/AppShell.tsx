@@ -47,9 +47,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (!mounted || !accessToken) return null;
 
   function handleLogout() {
-    const deviceId = sessionStorage.getItem('kairos_deviceId');
+    // Session only — the device key and device id stay in localStorage so the
+    // next Google sign-in on this browser won't ask for the recovery phrase.
     sessionStorage.clear();
-    if (deviceId) sessionStorage.setItem('kairos_deviceId', deviceId);
     dispatch(clearAuth());
     dispatch(clearCrypto());
     router.push('/login');

@@ -12,11 +12,14 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column()
-  password: string;
+  @Column({ unique: true })
+  googleId: string;
 
   @Column({ type: 'text', nullable: true })
-  encryptedPrivateKey: string | null;
+  name: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  picture: string | null;
 
   @Column({ type: 'text', nullable: true })
   mnemonicEncryptedPrivateKey: string | null;

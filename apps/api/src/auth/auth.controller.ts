@@ -1,26 +1,34 @@
-import { Controller, Post, Patch, Body, HttpCode, HttpStatus, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Patch, Get, Body, HttpCode, HttpStatus, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
+import { GoogleLoginDto } from './dto/google-login.dto';
+import { SetupKeysDto } from './dto/setup-keys.dto';
 import { UpdateMnemonicDto } from './dto/update-mnemonic.dto';
-import { RecoveryInitDto } from './dto/recovery-init.dto';
-import { ResetWithMnemonicDto } from './dto/reset-with-mnemonic.dto';
+import { CliCodeDto } from './dto/cli-code.dto';
+import { CliPollDto } from './dto/cli-poll.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
+
+type AuthedRequest = { user: { sub: string } };
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
-  register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  google(@Body() dto: GoogleLoginDto) {
+    return this.authService.googleLogin(dto.idToken);
   }
 
-  @Post('login')
-  @HttpCode(HttpStatus.OK)
-  login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  me(@Request() req: AuthedRequest) {
+    return this.authService.me(req.user.sub);
+  }
+
+  @Post('setup-keys')
+  @UseGuards(JwtAuthGuard)
+  setupKeys(@Request() req: AuthedRequest, @Body() dto: SetupKeysDto) {
+    return this.authService.setupKeys(req.user.sub, dto);
   }
 
   @Post('logout')
@@ -30,27 +38,37 @@ export class AuthController {
     return { message: 'Logged out' };
   }
 
-  @Patch('change-password')
-  @UseGuards(JwtAuthGuard)
-  changePassword(@Request() req: { user: { sub: string } }, @Body() dto: ChangePasswordDto) {
-    return this.authService.changePassword(req.user.sub, dto);
-  }
-
   @Patch('update-mnemonic')
   @UseGuards(JwtAuthGuard)
-  updateMnemonic(@Request() req: { user: { sub: string } }, @Body() dto: UpdateMnemonicDto) {
+  updateMnemonic(@Request() req: AuthedRequest, @Body() dto: UpdateMnemonicDto) {
     return this.authService.updateMnemonic(req.user.sub, dto);
   }
 
-  @Post('recovery-init')
+  // ─── CLI device-code flow ─────────────────────────────────────────────────
+
+  @Post('cli/start')
   @HttpCode(HttpStatus.OK)
-  recoveryInit(@Body() dto: RecoveryInitDto) {
-    return this.authService.recoveryInit(dto);
+  cliStart() {
+    return this.authService.cliStart();
   }
 
-  @Post('reset-with-mnemonic')
+  @Post('cli/approve')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  resetWithMnemonic(@Body() dto: ResetWithMnemonicDto) {
-    return this.authService.resetWithMnemonic(dto);
+  cliApprove(@Request() req: AuthedRequest, @Body() dto: CliCodeDto) {
+    return this.authService.cliApprove(req.user.sub, dto.code);
+  }
+
+  @Post('cli/deny')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  cliDeny(@Request() req: AuthedRequest, @Body() dto: CliCodeDto) {
+    return this.authService.cliDeny(req.user.sub, dto.code);
+  }
+
+  @Post('cli/poll')
+  @HttpCode(HttpStatus.OK)
+  cliPoll(@Body() dto: CliPollDto) {
+    return this.authService.cliPoll(dto.pollSecret);
   }
 }

@@ -88,7 +88,7 @@ export default function LandingPage() {
                 Kairos encrypts secrets end-to-end on your device. The server never sees plaintext. Pull secrets into any environment with a single CLI command.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
-                <Link href="/register" className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-center">
+                <Link href="/login" className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-center">
                   Get started free
                 </Link>
                 <a href="#install" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium px-6 py-3 w-full sm:w-auto text-center">
@@ -197,7 +197,7 @@ kairos secrets -t $KAIROS_TOKEN -g .env`}</pre>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Ready to start?</h2>
             <p className="text-gray-600 dark:text-gray-400 mb-8">Create an account, add your secrets, and pull them anywhere.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/register" className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-center">
+              <Link href="/login" className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-center">
                 Create account
               </Link>
               <Link href="/login" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium px-6 py-3 w-full sm:w-auto text-center">

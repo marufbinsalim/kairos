@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User, Device, Project, Environment, WrappedDEK, Secret, DeployToken } from '@kairos/db';
+import { User, Device, Project, Environment, WrappedDEK, Secret, DeployToken, CliAuthRequest } from '@kairos/db';
 import { AuthModule } from './auth/auth.module';
 import { DevicesModule } from './devices/devices.module';
 import { ProjectsModule } from './projects/projects.module';
@@ -15,7 +15,7 @@ import { DeployTokensModule } from './deploy-tokens/deploy-tokens.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: [User, Device, Project, Environment, WrappedDEK, Secret, DeployToken],
+      entities: [User, Device, Project, Environment, WrappedDEK, Secret, DeployToken, CliAuthRequest],
       synchronize: true,
       logging: process.env.NODE_ENV === 'development',
     }),

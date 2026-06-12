@@ -4,147 +4,12 @@ import { useSelector } from 'react-redux';
 import { AppShell } from '@/components/AppShell';
 import { selectCrypto } from '@/lib/store/cryptoSlice';
 import { selectAuth } from '@/lib/store/authSlice';
-import { useChangePasswordMutation, useUpdateMnemonicMutation } from '@/lib/store/api';
+import { useUpdateMnemonicMutation } from '@/lib/store/api';
 import {
-  encryptPrivateKeyWithPassword,
-  decryptPrivateKeyWithPassword,
   generateRecoveryMnemonic,
   wrapPrivateKeyWithMnemonic,
-  base64ToBytes,
 } from '@/lib/crypto/keypair';
-
-function ChangePasswordSection() {
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [changePassword] = useChangePasswordMutation();
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError('');
-    setSuccess(false);
-
-    if (newPassword !== confirmPassword) {
-      setError('New passwords do not match.');
-      return;
-    }
-    if (newPassword.length < 8) {
-      setError('New password must be at least 8 characters.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const stored = sessionStorage.getItem('kairos_privkey');
-      if (!stored) throw new Error('Private key not found — please re-login.');
-      const rawPrivateKey = base64ToBytes(stored);
-
-      const newEncryptedPrivateKey = await encryptPrivateKeyWithPassword(rawPrivateKey, newPassword);
-
-      // Verify round-trip before committing to the server
-      const verify = await decryptPrivateKeyWithPassword(newEncryptedPrivateKey, newPassword);
-      if (verify.length !== rawPrivateKey.length || !verify.every((b, i) => b === rawPrivateKey[i])) {
-        throw new Error('Key encryption verification failed');
-      }
-
-      await changePassword({ currentPassword, newPassword, newEncryptedPrivateKey }).unwrap();
-      setSuccess(true);
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch (err: unknown) {
-      const status = (err as { status?: number })?.status;
-      if (status === 401) {
-        setError('Current password is incorrect.');
-      } else {
-        setError('Failed to change password. Please try again.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center flex-shrink-0">
-          <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-          </svg>
-        </div>
-        <div>
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Change password</h2>
-          <p className="text-xs text-gray-500">Your private key will be re-encrypted with the new password.</p>
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">Current password</label>
-          <input
-            type="password"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-            className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3.5 py-2.5 text-gray-900 dark:text-white text-sm placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
-            placeholder="••••••••"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">New password</label>
-          <input
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3.5 py-2.5 text-gray-900 dark:text-white text-sm placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
-            placeholder="Min. 8 characters"
-            required
-            minLength={8}
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">Confirm new password</label>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3.5 py-2.5 text-gray-900 dark:text-white text-sm placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
-            placeholder="••••••••"
-            required
-          />
-        </div>
-
-        {error && (
-          <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
-            <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
-            </svg>
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className="flex items-center gap-2 text-green-400 text-sm bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-2">
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            Password changed successfully.
-          </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors"
-        >
-          {loading ? 'Updating...' : 'Update password'}
-        </button>
-      </form>
-    </div>
-  );
-}
+import { loadPrivateKeyLocal } from '@/lib/storage/keys';
 
 function RegenerateMnemonicSection() {
   const { privateKey } = useSelector(selectCrypto);
@@ -192,9 +57,9 @@ function RegenerateMnemonicSection() {
       if (privateKey) {
         rawPrivateKey = privateKey instanceof Uint8Array ? privateKey : new Uint8Array(Object.values(privateKey as Record<string, number>));
       } else {
-        const stored = sessionStorage.getItem('kairos_privkey');
+        const stored = loadPrivateKeyLocal();
         if (!stored) throw new Error('no_key');
-        rawPrivateKey = base64ToBytes(stored);
+        rawPrivateKey = stored;
       }
 
       const mnemonicEncryptedPrivateKey = await wrapPrivateKeyWithMnemonic(rawPrivateKey, newMnemonic);
@@ -237,7 +102,7 @@ function RegenerateMnemonicSection() {
           )}
           <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 mb-5">
             <p className="text-amber-700 dark:text-amber-300 text-xs leading-relaxed">
-              Generating a new phrase will <strong>invalidate your old one</strong>. Save the new phrase immediately — if you lose it and forget your password, your account is unrecoverable.
+              Generating a new phrase will <strong>invalidate your old one</strong>. Save the new phrase immediately — it is the only way to unlock your secrets on a new browser or device.
             </p>
           </div>
           <button
@@ -359,7 +224,6 @@ export default function AccountPage() {
         </div>
 
         <div className="space-y-6">
-          <ChangePasswordSection />
           <RegenerateMnemonicSection />
         </div>
       </div>

@@ -35,7 +35,9 @@ const authSlice = createSlice({
       state.accessToken = null;
       state.userId = null;
       state.email = null;
-      ['kairos_token', 'kairos_userId', 'kairos_email', 'kairos_deviceId', 'kairos_pw', 'kairos_privkey'].forEach(
+      // Session only — the device private key stays in localStorage so this
+      // browser remains trusted; next Google sign-in won't need the phrase.
+      ['kairos_token', 'kairos_userId', 'kairos_email', 'kairos_pw', 'kairos_privkey'].forEach(
         (k) => sessionStorage.removeItem(k),
       );
     },

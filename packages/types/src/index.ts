@@ -66,7 +66,25 @@ export interface Secret {
 export interface AuthResponse {
   accessToken: string;
   userId: string;
-  encryptedPrivateKey?: string;
+  email: string;
+  name: string | null;
+  picture: string | null;
+  publicKey: string | null;
+  mnemonicEncryptedPrivateKey: string | null;
+}
+
+export interface MeResponse {
+  userId: string;
+  email: string;
+  name: string | null;
+  picture: string | null;
+  publicKey: string | null;
+  mnemonicEncryptedPrivateKey: string | null;
+}
+
+export interface SetupKeysArgs {
+  publicKey: string;
+  mnemonicEncryptedPrivateKey: string;
 }
 
 export interface RegisterDeviceArgs {
@@ -109,24 +127,8 @@ export interface UpsertSecretArgs {
   iv: string;
 }
 
-export interface ChangePasswordArgs {
-  currentPassword: string;
-  newPassword: string;
-  newEncryptedPrivateKey: string;
-}
-
 export interface UpdateMnemonicArgs {
   mnemonicEncryptedPrivateKey: string;
-}
-
-export interface RecoveryInitResponse {
-  mnemonicEncryptedPrivateKey: string | null;
-}
-
-export interface ResetWithMnemonicArgs {
-  email: string;
-  newPassword: string;
-  newEncryptedPrivateKey: string;
 }
 
 export interface DeployToken {

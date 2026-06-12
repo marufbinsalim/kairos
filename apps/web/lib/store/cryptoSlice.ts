@@ -9,7 +9,7 @@ interface CryptoState {
 
 function loadDeviceId(): string | null {
   if (typeof window === 'undefined') return null;
-  return sessionStorage.getItem('kairos_deviceId');
+  return localStorage.getItem('kairos_deviceId') ?? sessionStorage.getItem('kairos_deviceId');
 }
 
 const initialState: CryptoState = {
@@ -32,7 +32,7 @@ const cryptoSlice = createSlice({
     },
     setDeviceId(state, action: PayloadAction<string>) {
       state.deviceId = action.payload;
-      sessionStorage.setItem('kairos_deviceId', action.payload);
+      localStorage.setItem('kairos_deviceId', action.payload);
     },
     clearCrypto(state) {
       state.privateKey = null;
