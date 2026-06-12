@@ -96,7 +96,10 @@ function ApproveModal({ device, onClose }: { device: Device; onClose: () => void
               {requestedEnvs.map((env) => (
                 <div key={env.id} className="flex items-center gap-2.5 bg-gray-100/60 dark:bg-gray-900/60 border border-gray-200/60 dark:border-gray-700/60 rounded-lg px-3 py-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
-                  <span className="text-sm text-gray-700 dark:text-gray-200">{env.name}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-200">
+                    {env.projectName && <span className="text-gray-500">{env.projectName} › </span>}
+                    {env.name}
+                  </span>
                 </div>
               ))}
             </div>
@@ -214,7 +217,7 @@ export default function DevicesPage() {
                     <p className="text-gray-500 text-xs mt-0.5 font-mono">{d.publicKey.slice(0, 24)}…</p>
                     {d.requestedEnvInfo && d.requestedEnvInfo.length > 0 && (
                       <p className="text-yellow-500/70 text-xs mt-1">
-                        Requesting: {d.requestedEnvInfo.map((e) => e.name).join(', ')}
+                        Requesting: {d.requestedEnvInfo.map((e) => (e.projectName ? `${e.projectName} › ${e.name}` : e.name)).join(', ')}
                       </p>
                     )}
                   </div>

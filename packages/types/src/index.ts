@@ -25,7 +25,7 @@ export interface Device {
   label?: string;
   createdAt: string;
   requestedEnvironmentIds?: string[];
-  requestedEnvInfo?: Array<{ id: string; name: string }>;
+  requestedEnvInfo?: Array<{ id: string; name: string; projectName?: string }>;
   environments?: Array<{ id: string; name: string; projectName: string }>;
 }
 

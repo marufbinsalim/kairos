@@ -82,13 +82,19 @@ export class DevicesService {
     });
 
     const allEnvIds = [...new Set(devices.flatMap((d) => d.requestedEnvironmentIds ?? []))];
-    const envs = allEnvIds.length ? await this.envRepo.findByIds(allEnvIds) : [];
+    const envs = allEnvIds.length
+      ? await this.envRepo.find({ where: { id: In(allEnvIds) }, relations: ['project'] })
+      : [];
 
     return devices.map((d) => ({
       ...d,
       requestedEnvInfo: (d.requestedEnvironmentIds ?? []).map((envId) => {
         const env = envs.find((e) => e.id === envId);
-        return { id: envId, name: env?.name ?? 'Unknown' };
+        return {
+          id: envId,
+          name: env?.name ?? 'Unknown',
+          projectName: (env as Environment & { project?: { name: string } })?.project?.name ?? '',
+        };
       }),
     }));
   }

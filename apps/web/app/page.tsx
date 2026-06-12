@@ -266,20 +266,20 @@ kairos secrets -t $KAIROS_TOKEN -g .env`}</pre>
 
         {/* CTA */}
         <section className="pb-24 text-center">
-          <div className="relative overflow-hidden bg-gray-900 dark:bg-gray-950 border border-gray-800 rounded-xl p-10 md:p-16">
+          <div className="relative overflow-hidden bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-10 md:p-16">
             <div
-              className="absolute inset-0 opacity-[0.07]"
-              style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)', backgroundSize: '24px 24px' }}
+              className="absolute inset-0 opacity-[0.08] text-gray-900 dark:text-white"
+              style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)', backgroundSize: '24px 24px' }}
               aria-hidden
             />
             <div className="relative">
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">Own your secrets.</h2>
-              <p className="text-gray-400 mb-8 max-w-md mx-auto">Sign in with Google, save a recovery phrase, and pull encrypted secrets anywhere in under a minute.</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-3">Own your secrets.</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">Sign in with Google, save a recovery phrase, and pull encrypted secrets anywhere in under a minute.</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/login" className="bg-white hover:bg-gray-200 text-black font-medium px-6 py-3 rounded-lg transition-colors w-full sm:w-auto text-center">
+                <Link href="/login" className="bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-white text-white dark:text-black font-medium px-6 py-3 rounded-lg transition-colors w-full sm:w-auto text-center">
                   Create account
                 </Link>
-                <a href={`https://github.com/${REPO}`} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors font-medium px-6 py-3 w-full sm:w-auto text-center">
+                <a href={`https://github.com/${REPO}`} target="_blank" rel="noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium px-6 py-3 w-full sm:w-auto text-center">
                   Star on GitHub →
                 </a>
               </div>
